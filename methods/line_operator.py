@@ -11,6 +11,28 @@ from util.image_util import *
 from util.time import Time
 
 
+def cached_multi(path, image, mask, line_size):
+    cache_dir = os.path.dirname(path) + '/cache'
+
+    if not os.path.exists(cache_dir):
+        os.mkdir(cache_dir)
+
+    file_path = '%s/multi-%s-%d.bin' % (cache_dir, os.path.basename(path), line_size)
+
+    if os.path.exists(file_path):
+        binary_file = open(file_path, mode='rb')
+        line_strength = pickle.load(binary_file)
+    else:
+        line_strength = multi(path, image, mask, line_size)
+        binary_file = open(file_path, mode='wb')
+
+        pickle.dump(line_strength, binary_file)
+
+    binary_file.close()
+
+    return line_strength
+
+
 def multi(path, image, mask, line_size):
     window_avg = window_average.cached_integral(path, image, mask, line_size)
     line_str = [single(cached_line(path, image, mask, size), window_avg, mask) for size in range(1, line_size + 1, 2)]
@@ -119,7 +141,7 @@ def cache_all():
 
         for size in range(1, 16, 2):
             time.start('%s [%d]' % (path, size))
-            window_avg = window_average.cached_basic(path, image, mask, size)
+            window_avg = window_average.cached_integral(path, image, mask, size)
             cached_line(path, image, mask, size)
             time.finish()
 
@@ -136,8 +158,8 @@ def main():
     time.finish()
 
     time.start('Single')
-    line_only = cached_line(path, image, mask, size)
-    single_scale = single(line_only, window_avg, mask)
+    line_img = cached_line(path, image, mask, size)
+    single_img = single(line_img, window_avg, mask)
     time.finish()
 
     # time.start('Single scale + wing')
@@ -145,11 +167,11 @@ def main():
     # time.finish()
 
     # time.start('Find best threshold')
-    # best_single_thresh, best_single = find_best_threshold(single_scale, mask, ground_truth)
+    # best_single_thresh, best_single = find_best_threshold(single_img, mask, ground_truth)
     # time.finish()
 
     time.start('Multi scale')
-    multi_scale = multi(path, image, mask, size)
+    multi_scale = cached_multi(path, image, mask, size)
     time.finish()
 
     # time.start('Find best multi scale')
@@ -161,7 +183,7 @@ def main():
 
     cv2.imshow('Image', image)
     # cv2.imshow('Window average', normalize_masked(window_avg, mask))
-    cv2.imshow('Single', normalize_masked(single_scale, mask))
+    cv2.imshow('Single', normalize_masked(single_img, mask))
     # cv2.imshow('Single + wing', normalize_masked(255 - single_scale_wing, mask))
     # cv2.imshow('Single best', 255 - normalize_masked(best_single, mask))
     cv2.imshow('Multi', normalize_masked(multi_scale, mask))
