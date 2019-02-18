@@ -139,11 +139,15 @@ def cache_all():
     for path, image, mask, ground_truth in DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing():
         image = 255 - image[:, :, 1]
 
-        for size in range(1, 16, 2):
-            time.start('%s [%d]' % (path, size))
-            window_avg = window_average.cached_integral(path, image, mask, size)
-            cached_line(path, image, mask, size)
-            time.finish()
+        time.start('%s' % path)
+        cached_multi(path, image, mask, 15)
+        time.finish()
+
+        # for size in range(1, 16, 2):
+        #     time.start('%s [%d]' % (path, size))
+        #     window_avg = window_average.cached_integral(path, image, mask, size)
+        #     cached_line(path, image, mask, size)
+        #     time.finish()
 
 
 def main():
@@ -197,4 +201,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    cache_all()
