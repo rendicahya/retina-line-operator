@@ -136,7 +136,7 @@ def line_worker(image, bool_mask, lines, queue, cpu_count, cpu_id):
 def cache_all():
     time = Time()
 
-    for path, image, mask, ground_truth in DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing():
+    for path, image, mask, ground_truth in DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training():
         image = 255 - image[:, :, 1]
 
         time.start('%s' % path)
