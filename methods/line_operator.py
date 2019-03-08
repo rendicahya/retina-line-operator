@@ -174,9 +174,9 @@ def main():
     # best_single_thresh, best_single = find_best_threshold(single_img, mask, ground_truth)
     # time.finish()
 
-    time.start('Multi scale')
-    multi_scale = cached_multi(path, image, mask, size)
-    time.finish()
+    # time.start('Multi scale')
+    # multi_scale = cached_multi(path, image, mask, size)
+    # time.finish()
 
     # time.start('Find best multi scale')
     # best_multi_thresh, best_multi = find_best_threshold(multi_scale, mask, ground_truth)
@@ -190,15 +190,16 @@ def main():
     cv2.imshow('Single', normalize_masked(single_img, mask))
     # cv2.imshow('Single + wing', normalize_masked(255 - single_scale_wing, mask))
     # cv2.imshow('Single best', 255 - normalize_masked(best_single, mask))
-    cv2.imshow('Multi', normalize_masked(multi_scale, mask))
+    # cv2.imshow('Multi', normalize_masked(multi_scale, mask))
     # cv2.imshow('Best multi', 255 - normalize_masked(best_multi, mask))
     # cv2.imshow('Multi histeq', cv2.equalizeHist(multi_scale))
     # cv2.imshow('Ground truth', ground_truth)
     # cv2.imshow('Best binary', binary)
     # cv2.imshow('Multi', normalized_masked(multi_scale_norm, mask))
+    cv2.imwrite('C:/Users/Randy Cahya Wihandik/Desktop/single-scale.jpg', normalize_masked(single_img, mask))
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':
-    cache_all()
+    main()
