@@ -77,9 +77,9 @@ class FeatureExtractor:
 
     def get_single_linestr_feat(self):
         window = window_average.cached_integral(self.path, self.image, self.mask, self.size)
-        line_img = single_line_opr.cached_line(self.path, self.image, self.mask, self.size)
-        linestr = single_line_opr.single(line_img, window, self.mask)
-        fov_data = linestr[self.mask == 255]
+        line = single_line_opr.cached_line(self.path, self.image, self.mask, self.size)
+        line_str = single_line_opr.single(line, window, self.mask)
+        fov_data = line_str[self.mask == 255]
         norm_fov_data = normalize(fov_data).ravel()
 
         if self.select_fg_idx is None or self.select_bg_idx is None:
@@ -94,8 +94,8 @@ class FeatureExtractor:
             return fg_feat, bg_feat
 
     def get_multi_linestr_feat(self):
-        linestr = multi_line_opr.cached_multi(self.path, self.image, self.mask, self.size)
-        fov_data = linestr[self.mask == 255]
+        line_str = multi_line_opr.cached_multi(self.path, self.image, self.mask, self.size)
+        fov_data = line_str[self.mask == 255]
         norm_fov_data = normalize(fov_data).ravel()
 
         if self.select_fg_idx is None or self.select_bg_idx is None:
