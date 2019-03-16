@@ -19,9 +19,9 @@ def main():
 
     time.start('Feature extraction')
 
-    for path, image, mask, ground_truth in drive.load_training():
-        image = 255 - image[:, :, 1]
-        feat_ex = FeatureExtractor(image, mask, path, line_size, ground_truth, N_FEATURES)
+    for path, img, mask, ground_truth in drive.load_training():
+        img = 255 - img[:, :, 1]
+        feat_ex = FeatureExtractor(img, mask, path, line_size, ground_truth, N_FEATURES)
 
         pixel_feat_fg, pixel_feat_bg = feat_ex.get_pixel_feat()
         single_fg, single_bg = feat_ex.get_single_linestr_feat()
@@ -54,9 +54,9 @@ def main():
     classifier.fit(all_feat, target)
     time.finish()
 
-    path, image, mask, ground_truth = drive.load_testing_one(1)
-    image = 255 - image[:, :, 1]
-    feat_ex = FeatureExtractor(image, mask, path, line_size)
+    path, img, mask, ground_truth = drive.load_testing_one(1)
+    img = 255 - img[:, :, 1]
+    feat_ex = FeatureExtractor(img, mask, path, line_size)
 
     pixel_feat = feat_ex.get_pixel_feat()
     single_feat = feat_ex.get_single_linestr_feat()
@@ -79,7 +79,7 @@ def main():
     blue('Accuracy: %f' % accuracy_score(result_image.ravel(), ground_truth.ravel()))
     blue('Accuracy FOV: %f' % accuracy_score(result, ground_truth[mask == 255].ravel()))
 
-    # cv2.imshow('Image', image)
+    # cv2.imshow('Image', img)
     cv2.imshow('Segmentation', result_image)
     cv2.imshow('Ground truth', ground_truth)
     cv2.imwrite('C:/Users/Randy Cahya Wihandik/Desktop/segmentation.jpg', result_image)
