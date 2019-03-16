@@ -29,9 +29,9 @@ def cached_multi(path, img, mask, size):
     return line_strength
 
 
-def multi(path, image, mask, line_size):
-    window = window_average.cached_integral(path, image, mask, line_size)
-    line_str = [single_line_opr.single(single_line_opr.cached_line(path, image, mask, size), window, mask)
+def multi(path, img, mask, line_size):
+    window = window_average.cached_integral(path, img, mask, line_size)
+    line_str = [single_line_opr.single(single_line_opr.cached_line(path, img, mask, size), window, mask)
                 for size in range(1, line_size + 1, 2)]
 
     return np.average(np.stack(line_str), axis=0)
@@ -40,11 +40,11 @@ def multi(path, image, mask, line_size):
 def cache_all():
     time = Time()
 
-    for path, image, mask, ground_truth in DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training():
-        image = 255 - image[:, :, 1]
+    for path, img, mask, ground_truth in DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training():
+        img = 255 - img[:, :, 1]
 
         time.start('%s' % path)
-        cached_multi(path, image, mask, 15)
+        cached_multi(path, img, mask, 15)
         time.finish()
 
 
