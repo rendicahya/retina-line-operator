@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-from methods import window_average, line_operator
+from methods import window_average, single_line_opr, multi_line_opr
 from util.data_util import normalize
 
 
@@ -9,11 +9,11 @@ class FeatureExtractor:
     select_fg_idx = None
     select_bg_idx = None
 
-    def __init__(self, image, mask, path, line_size, ground_truth=None, n_features=None):
+    def __init__(self, image, mask, path, size, ground_truth=None, n_features=None):
         self.image = image
         self.mask = mask
         self.path = path
-        self.line_size = line_size
+        self.size = size
 
         if ground_truth is not None and n_features is not None:
             all_fg_idx = np.argwhere(ground_truth == 255)
@@ -76,8 +76,9 @@ class FeatureExtractor:
             return features
 
     def get_single_linestr_feat(self):
-        window_avg = window_average.cached_basic(self.path, self.image, self.mask, self.line_size)
-        linestr = line_operator.cached_single(self.path, self.image, self.mask, window_avg, self.line_size)
+        window = window_average.cached_integral(self.path, self.image, self.mask, self.size)
+        line_img = single_line_opr.cached_line(self.path, self.image, self.mask, self.size)
+        linestr = single_line_opr.single(line_img, window, self.mask)
         fov_data = linestr[self.mask == 255]
         norm_fov_data = normalize(fov_data).ravel()
 
@@ -93,7 +94,7 @@ class FeatureExtractor:
             return fg_feat, bg_feat
 
     def get_multi_linestr_feat(self):
-        linestr = line_operator.multi(self.path, self.image, self.mask, self.line_size)
+        linestr = multi_line_opr.cached_multi(self.path, self.image, self.mask, self.size)
         fov_data = linestr[self.mask == 255]
         norm_fov_data = normalize(fov_data).ravel()
 
