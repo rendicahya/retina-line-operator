@@ -11,7 +11,7 @@ from util.image_util import *
 from util.time import Time
 
 
-def cached_multi(path, image, mask, line_size):
+def cached_multi(path, img, mask, line_size):
     cache_dir = os.path.dirname(path) + '/cache'
 
     if not os.path.exists(cache_dir):
@@ -23,7 +23,7 @@ def cached_multi(path, image, mask, line_size):
         binary_file = open(file_path, mode='rb')
         line_strength = pickle.load(binary_file)
     else:
-        line_strength = multi(path, image, mask, line_size)
+        line_strength = multi(path, img, mask, line_size)
         binary_file = open(file_path, mode='wb')
 
         pickle.dump(line_strength, binary_file)
@@ -46,7 +46,7 @@ def single(line_only, window_avg, mask):
     return cv2.subtract(line_only, window_avg, None, mask)
 
 
-def cached_line(path, image, mask, line_size):
+def cached_line(path, img, mask, line_size):
     cache_dir = os.path.dirname(path) + '/cache'
 
     if not os.path.exists(cache_dir):
@@ -58,7 +58,7 @@ def cached_line(path, image, mask, line_size):
         binary_file = open(file_path, mode='rb')
         line_strength = pickle.load(binary_file)
     else:
-        line_strength = line(image, mask, line_size)
+        line_strength = line(img, mask, line_size)
         binary_file = open(file_path, mode='wb')
 
         pickle.dump(line_strength, binary_file)
@@ -68,8 +68,8 @@ def cached_line(path, image, mask, line_size):
     return line_strength
 
 
-def line(image, mask, line_size):
-    image = image.astype(np.int16)
+def line(img, mask, line_size):
+    img = img.astype(np.int16)
     bool_mask = mask.astype(np.bool)
     lines, wings = line_factory.generate_lines(line_size)
 
@@ -77,7 +77,7 @@ def line(image, mask, line_size):
     cpu_count = psutil.cpu_count()
 
     processes = [
-        mp.Process(target=line_worker, args=(image, bool_mask, lines, queue, cpu_count, cpu_id))
+        mp.Process(target=line_worker, args=(img, bool_mask, lines, queue, cpu_count, cpu_id))
         for cpu_id in range(cpu_count)]
 
     for p in processes:
@@ -93,8 +93,8 @@ def line(image, mask, line_size):
     return np.vstack(slices)
 
 
-def line_worker(image, bool_mask, lines, queue, cpu_count, cpu_id):
-    height, width = image.shape[:2]
+def line_worker(img, bool_mask, lines, queue, cpu_count, cpu_id):
+    height, width = img.shape[:2]
     slice_height = height // cpu_count
     y_start = cpu_id * slice_height
     linestr = np.zeros((slice_height, width), np.int16)
@@ -118,7 +118,7 @@ def line_worker(image, bool_mask, lines, queue, cpu_count, cpu_id):
                         continue
 
                     line_count += 1
-                    line_sum += image[y, x]
+                    line_sum += img[y, x]
 
                 if line_count == 0:
                     continue
@@ -151,23 +151,23 @@ def cache_all():
 
 
 def main():
-    path, image, mask, ground_truth = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training_one(1)
+    path, img, mask, ground_truth = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training_one(1)
 
-    image = 255 - image[:, :, 1]
+    img = 255 - img[:, :, 1]
     size = 15
     time = Time()
 
     time.start('Window average')
-    window_avg = window_average.cached_integral(path, image, mask, size)
+    window_avg = window_average.cached_integral(path, img, mask, size)
     time.finish()
 
     time.start('Single')
-    line_img = cached_line(path, image, mask, size)
+    line_img = cached_line(path, img, mask, size)
     single_img = single(line_img, window_avg, mask)
     time.finish()
 
     # time.start('Single scale + wing')
-    # single_scale_wing = single(image, mask, window_avg, size)
+    # single_scale_wing = single(img, mask, window_avg, size)
     # time.finish()
 
     # time.start('Find best threshold')
@@ -175,7 +175,7 @@ def main():
     # time.finish()
 
     # time.start('Multi scale')
-    # multi_scale = cached_multi(path, image, mask, size)
+    # multi_scale = cached_multi(path, img, mask, size)
     # time.finish()
 
     # time.start('Find best multi scale')
@@ -185,7 +185,7 @@ def main():
     # green('Best single scale threshold: %d' % best_single_thresh)
     # green('Best multi scale threshold: %d' % best_multi_thresh)
 
-    cv2.imshow('Image', image)
+    cv2.imshow('Image', img)
     # cv2.imshow('Window average', normalize_masked(window_avg, mask))
     cv2.imshow('Single', normalize_masked(single_img, mask))
     # cv2.imshow('Single + wing', normalize_masked(255 - single_scale_wing, mask))
