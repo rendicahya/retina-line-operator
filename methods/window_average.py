@@ -6,19 +6,19 @@ from util.image_util import *
 from util.time import Time
 
 
-def cached_basic(path, image, mask, window_size):
+def cached_basic(path, image, mask, size):
     dir = os.path.dirname(path) + '/cache'
 
     if not os.path.exists(dir):
         os.mkdir(dir)
 
-    file_path = dir + '/window-%s-%d.bin' % (os.path.basename(path), window_size)
+    file_path = dir + '/window-%s-%d.bin' % (os.path.basename(path), size)
 
     if os.path.exists(file_path):
         binary_file = open(file_path, mode='rb')
         image = pickle.load(binary_file)
     else:
-        image = basic(image, mask, window_size)
+        image = basic(image, mask, size)
         binary_file = open(file_path, mode='wb')
 
         pickle.dump(image, binary_file)
@@ -28,9 +28,9 @@ def cached_basic(path, image, mask, window_size):
     return image
 
 
-def basic(image, mask, window_size):
+def basic(image, mask, size):
     height, width = image.shape
-    half = window_size // 2
+    half = size // 2
     output = np.zeros((height, width), np.float64)
     image = cv2.bitwise_and(image, image, mask=mask)
     bool_mask = mask.astype(np.bool)
@@ -119,6 +119,10 @@ def main():
     image = 255 - image[:, :, 1]
     time = Time()
     size = 15
+
+    time.start('Basic')
+    window_avg = basic(image, mask, size)
+    time.finish()
 
     time.start('Integral')
     window_avg = integral(image, mask, size)
