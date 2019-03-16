@@ -11,25 +11,25 @@ from util.image_util import *
 from util.time import Time
 
 
-def single(line_only, window_avg, mask):
-    line_only = line_only.astype(np.float64)
+def single(line_img, window, mask):
+    line_img = line_img.astype(np.float64)
 
-    return cv2.subtract(line_only, window_avg, None, mask)
+    return cv2.subtract(line_img, window, None, mask)
 
 
-def cached_line(path, img, mask, line_size):
+def cached_line(path, img, mask, size):
     cache_dir = os.path.dirname(path) + '/cache'
 
     if not os.path.exists(cache_dir):
         os.mkdir(cache_dir)
 
-    file_path = '%s/line-%s-%d.bin' % (cache_dir, os.path.basename(path), line_size)
+    file_path = '%s/line-%s-%d.bin' % (cache_dir, os.path.basename(path), size)
 
     if os.path.exists(file_path):
         binary_file = open(file_path, mode='rb')
         line_strength = pickle.load(binary_file)
     else:
-        line_strength = line(img, mask, line_size)
+        line_strength = line(img, mask, size)
         binary_file = open(file_path, mode='wb')
 
         pickle.dump(line_strength, binary_file)
@@ -107,18 +107,14 @@ def line_worker(img, bool_mask, lines, queue, cpu_count, cpu_id):
 def cache_all():
     time = Time()
 
-    for path, image, mask, ground_truth in DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training():
-        image = 255 - image[:, :, 1]
+    for path, img, mask, ground_truth in DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training():
+        img = 255 - img[:, :, 1]
 
-        time.start('%s' % path)
-        cached_multi(path, image, mask, 15)
-        time.finish()
-
-        # for size in range(1, 16, 2):
-        #     time.start('%s [%d]' % (path, size))
-        #     window_avg = window_average.cached_integral(path, image, mask, size)
-        #     cached_line(path, image, mask, size)
-        #     time.finish()
+        for size in range(1, 16, 2):
+            time.start('%s [%d]' % (path, size))
+            window_avg = window_average.cached_integral(path, img, mask, size)
+            # cached_line(path, img, mask, size)
+            time.finish()
 
 
 def main():
@@ -167,7 +163,6 @@ def main():
     # cv2.imshow('Ground truth', ground_truth)
     # cv2.imshow('Best binary', binary)
     # cv2.imshow('Multi', normalized_masked(multi_scale_norm, mask))
-    cv2.imwrite('C:/Users/Randy Cahya Wihandik/Desktop/single-scale.jpg', normalize_masked(single_img, mask))
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
