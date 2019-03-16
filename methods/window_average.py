@@ -50,19 +50,19 @@ def basic(image, mask, window_size):
     return output
 
 
-def cached_integral(path, image, mask, window_size):
+def cached_integral(path, image, mask, size):
     dir = os.path.dirname(path) + '/cache'
 
     if not os.path.exists(dir):
         os.mkdir(dir)
 
-    file_path = dir + '/window-%s-%d.bin' % (os.path.basename(path), window_size)
+    file_path = dir + '/window-%s-%d.bin' % (os.path.basename(path), size)
 
     if os.path.exists(file_path):
         binary_file = open(file_path, mode='rb')
         image = pickle.load(binary_file)
     else:
-        image = integral(image, mask, window_size)
+        image = integral(image, mask, size)
         binary_file = open(file_path, mode='wb')
 
         pickle.dump(image, binary_file)
@@ -120,8 +120,8 @@ def main():
     time = Time()
     size = 15
 
-    time.start('Window average')
-    window_avg = cached_integral(path, image, mask, size)
+    time.start('Integral')
+    window_avg = integral(image, mask, size)
     time.finish()
 
     cv2.imshow('Image', image)
@@ -131,4 +131,4 @@ def main():
 
 
 if __name__ == '__main__':
-    cache_all()
+    main()
