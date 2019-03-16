@@ -11,35 +11,6 @@ from util.image_util import *
 from util.time import Time
 
 
-def cached_multi(path, img, mask, line_size):
-    cache_dir = os.path.dirname(path) + '/cache'
-
-    if not os.path.exists(cache_dir):
-        os.mkdir(cache_dir)
-
-    file_path = '%s/multi-%s-%d.bin' % (cache_dir, os.path.basename(path), line_size)
-
-    if os.path.exists(file_path):
-        binary_file = open(file_path, mode='rb')
-        line_strength = pickle.load(binary_file)
-    else:
-        line_strength = multi(path, img, mask, line_size)
-        binary_file = open(file_path, mode='wb')
-
-        pickle.dump(line_strength, binary_file)
-
-    binary_file.close()
-
-    return line_strength
-
-
-def multi(path, image, mask, line_size):
-    window_avg = window_average.cached_integral(path, image, mask, line_size)
-    line_str = [single(cached_line(path, image, mask, size), window_avg, mask) for size in range(1, line_size + 1, 2)]
-
-    return np.average(np.stack(line_str), axis=0)
-
-
 def single(line_only, window_avg, mask):
     line_only = line_only.astype(np.float64)
 
