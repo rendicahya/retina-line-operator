@@ -47,12 +47,6 @@ def cache_all():
         cached_multi(path, image, mask, 15)
         time.finish()
 
-        # for size in range(1, 16, 2):
-        #     time.start('%s [%d]' % (path, size))
-        #     window_avg = window_average.cached_integral(path, image, mask, size)
-        #     cached_line(path, image, mask, size)
-        #     time.finish()
-
 
 def main():
     path, img, mask, ground_truth = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training_one(1)
@@ -73,13 +67,12 @@ def main():
     # green('Best multi scale threshold: %d' % best_multi_thresh)
 
     cv2.imshow('Image', img)
-    # cv2.imshow('Multi', normalize_masked(multi_scale, mask))
+    cv2.imshow('Multi', normalize_masked(multi_scale, mask))
     # cv2.imshow('Best multi', 255 - normalize_masked(best_multi, mask))
     # cv2.imshow('Multi histeq', cv2.equalizeHist(multi_scale))
     # cv2.imshow('Ground truth', ground_truth)
     # cv2.imshow('Best binary', binary)
     # cv2.imshow('Multi', normalized_masked(multi_scale_norm, mask))
-    cv2.imwrite('C:/Users/Randy Cahya Wihandik/Desktop/single-scale.jpg', normalize_masked(single_img, mask))
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
