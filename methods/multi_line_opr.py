@@ -31,8 +31,8 @@ def cached_multi(path, img, mask, size):
 
 def multi(path, image, mask, line_size):
     window = window_average.cached_integral(path, image, mask, line_size)
-    line_str = [single_line_opr.single(single_line_opr.cached_line(path, image, mask, size), window, mask) for size in
-                range(1, line_size + 1, 2)]
+    line_str = [single_line_opr.single(single_line_opr.cached_line(path, image, mask, size), window, mask)
+                for size in range(1, line_size + 1, 2)]
 
     return np.average(np.stack(line_str), axis=0)
 
