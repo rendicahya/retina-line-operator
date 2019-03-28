@@ -120,9 +120,9 @@ def main():
     time = Time()
     size = 15
 
-    time.start('Basic')
-    window_avg = basic(image, mask, size)
-    time.finish()
+    # time.start('Basic')
+    # window_avg = basic(image, mask, size)
+    # time.finish()
 
     time.start('Integral')
     window_avg = integral(image, mask, size)

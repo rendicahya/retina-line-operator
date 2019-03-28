@@ -11,10 +11,10 @@ from util.image_util import *
 from util.time import Time
 
 
-def single(line_img, window, mask):
-    line_img = line_img.astype(np.float64)
+def single(line, window, mask):
+    line = line.astype(np.float64)
 
-    return cv2.subtract(line_img, window, None, mask)
+    return cv2.subtract(line, window, None, mask)
 
 
 def cached_line(path, img, mask, size):
@@ -39,10 +39,10 @@ def cached_line(path, img, mask, size):
     return line_strength
 
 
-def line(img, mask, line_size):
+def line(img, mask, size):
     img = img.astype(np.int16)
     bool_mask = mask.astype(np.bool)
-    lines, wings = line_factory.generate_lines(line_size)
+    lines, wings = line_factory.generate_lines(size)
 
     queue = mp.Queue()
     cpu_count = psutil.cpu_count()
