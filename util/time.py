@@ -8,7 +8,7 @@ class Time:
 
     def start(self, msg):
         self.start_time = perf_counter()
-        blue('%s: ' % msg, end='')
+        blue(f'{msg}: ', end='')
 
     def finish(self):
         time = perf_counter() - self.start_time
