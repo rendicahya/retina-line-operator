@@ -1,20 +1,14 @@
 import multiprocessing as mp
 import os.path
 import pickle
-import sys
 
 import psutil
 
 from dataset.DriveDatasetLoader import DriveDatasetLoader
 from methods import window_average, line_factory
+from methods.single_line_opr import subtract
 from util.image_util import *
 from util.time import Time
-
-
-def single(line, window, mask):
-    line = line.astype(np.float64)
-
-    return cv2.subtract(line, window, None, mask)
 
 
 def cached_line(path, img, mask, size):
@@ -125,7 +119,7 @@ def main():
 
     time.start('Single')
     line_img = line(img, mask, size)
-    single_img = single(line_img, window_avg, mask)
+    single_img = subtract(line_img, window_avg, mask)
     time.finish()
 
     # time.start('Single scale + wing')
