@@ -1,7 +1,9 @@
 import cv2
 import numpy as np
 
-from methods import window_average, single_line_opr, multi_line_opr
+from methods.multi_line_opr import cached_multi
+from methods.single_line_opr import subtract, cached_line
+from methods.window_average import cached_integral
 from util.data_util import normalize
 
 
@@ -76,9 +78,9 @@ class FeatureExtractor:
             return features
 
     def get_single_linestr_feat(self):
-        window = window_average.cached_integral(self.path, self.image, self.mask, self.size)
-        line = single_line_opr.cached_line(self.path, self.image, self.mask, self.size)
-        line_str = single_line_opr.single(line, window, self.mask)
+        window = cached_integral(self.path, self.image, self.mask, self.size)
+        line = cached_line(self.path, self.image, self.mask, self.size)
+        line_str = subtract(line, window, self.mask)
         fov_data = line_str[self.mask == 255]
         norm_fov_data = normalize(fov_data).ravel()
 
@@ -94,7 +96,7 @@ class FeatureExtractor:
             return fg_feat, bg_feat
 
     def get_multi_linestr_feat(self):
-        line_str = multi_line_opr.cached_multi(self.path, self.image, self.mask, self.size)
+        line_str = cached_multi(self.path, self.image, self.mask, self.size)
         fov_data = line_str[self.mask == 255]
         norm_fov_data = normalize(fov_data).ravel()
 
