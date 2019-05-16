@@ -21,11 +21,11 @@ def main():
 
     for path, img, mask, ground_truth in drive.load_training():
         img = 255 - img[:, :, 1]
-        feat_ex = FeatureExtractor(img, mask, path, line_size, ground_truth, N_FEATURES)
+        feat_extractor = FeatureExtractor(img, mask, path, line_size, ground_truth, N_FEATURES)
 
-        pixel_feat_fg, pixel_feat_bg = feat_ex.get_pixel_feat()
-        single_fg, single_bg = feat_ex.get_single_linestr_feat()
-        multi_fg, multi_bg = feat_ex.get_multi_linestr_feat()
+        pixel_feat_fg, pixel_feat_bg = feat_extractor.get_pixel_feat()
+        single_fg, single_bg = feat_extractor.get_single_linestr_feat()
+        multi_fg, multi_bg = feat_extractor.get_multi_linestr_feat()
 
         fg_feat = np.column_stack((
             pixel_feat_fg,
@@ -56,11 +56,11 @@ def main():
 
     path, img, mask, ground_truth = drive.load_testing_one(1)
     img = 255 - img[:, :, 1]
-    feat_ex = FeatureExtractor(img, mask, path, line_size)
+    feat_extractor = FeatureExtractor(img, mask, path, line_size)
 
-    pixel_feat = feat_ex.get_pixel_feat()
-    single_feat = feat_ex.get_single_linestr_feat()
-    multi_feat = feat_ex.get_multi_linestr_feat()
+    pixel_feat = feat_extractor.get_pixel_feat()
+    single_feat = feat_extractor.get_single_linestr_feat()
+    multi_feat = feat_extractor.get_multi_linestr_feat()
 
     all_feat = np.column_stack((
         pixel_feat,

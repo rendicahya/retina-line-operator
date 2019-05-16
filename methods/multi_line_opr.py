@@ -41,10 +41,10 @@ def multi(path, img, mask, size):
 def cache_all():
     time = Time()
 
-    for path, img, mask, ground_truth in DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training():
+    for path, img, mask, ground_truth in DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing():
         img = 255 - img[:, :, 1]
 
-        time.start('%s' % path)
+        time.start(path)
         cached_multi(path, img, mask, 15)
         time.finish()
 
@@ -79,4 +79,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    cache_all()
