@@ -2,8 +2,8 @@ import os.path
 import pickle
 
 from dataset.DriveDatasetLoader import DriveDatasetLoader
-from methods import window_average, single_line_opr as single
-from methods.single_line_opr import subtract
+from methods.single_line_opr import subtract, cached_line
+from methods.window_average import cached_integral
 from util.image_util import *
 from util.time import Time
 
@@ -31,8 +31,8 @@ def cached_multi(path, img, mask, size):
 
 
 def multi(path, img, mask, size):
-    window = window_average.cached_integral(path, img, mask, size)
-    line_str = [subtract(single.cached_line(path, img, mask, size), window, mask)
+    window = cached_integral(path, img, mask, size)
+    line_str = [subtract(cached_line(path, img, mask, size), window, mask)
                 for size in range(1, size + 1, 2)]
 
     return np.average(np.stack(line_str), axis=0)
