@@ -6,7 +6,8 @@ import sys
 import psutil
 
 from dataset.DriveDatasetLoader import DriveDatasetLoader
-from methods import window_average, line_factory
+from methods.line_factory import generate_lines
+from methods.window_average import cached_integral
 from util.image_util import *
 from util.time import Time
 
@@ -40,7 +41,7 @@ def cached_line(path, img, mask, size):
 def line(img, mask, size):
     img = img.astype(np.int16)
     bool_mask = mask.astype(np.bool)
-    lines, wings = line_factory.generate_lines(size)
+    lines, wings = generate_lines(size)
 
     queue = mp.Queue()
     cpu_count = psutil.cpu_count()
@@ -108,22 +109,25 @@ def cache_all():
     for path, img, mask, ground_truth in DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training():
         img = 255 - img[:, :, 1]
 
+        time.start(f'Window: {path} [15]')
+        cached_integral(path, img, mask, 15)
+        time.finish()
+
         for size in range(1, 16, 2):
-            time.start('%s [%d]' % (path, size))
-            window_avg = window_average.cached_integral(path, img, mask, size)
-            # cached_line(path, img, mask, size)
+            time.start(f'Line: {path} [{size}]')
+            cached_line(path, img, mask, size)
             time.finish()
 
 
 def main():
-    path, img, mask, ground_truth = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training_one(1)
+    path, img, mask, ground_truth = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training_one(15)
 
     img = 255 - img[:, :, 1]
     size = 15
     time = Time()
 
     time.start('Window average')
-    window_avg = window_average.cached_integral(path, img, mask, size)
+    window_avg = cached_integral(path, img, mask, size)
     time.finish()
 
     time.start('Single')
@@ -166,4 +170,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    cache_all()
