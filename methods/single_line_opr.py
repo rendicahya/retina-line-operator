@@ -119,6 +119,23 @@ def cache_all():
             time.finish()
 
 
+def accuracy():
+    path, img, mask, ground_truth = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training_one(15)
+
+    img = 255 - img[:, :, 1]
+    size = 15
+    time = Time()
+
+    time.start('Window average')
+    window_avg = cached_integral(path, img, mask, size)
+    time.finish()
+
+    time.start('Single')
+    line_img = cached_line(path, img, mask, size)
+    single_img = subtract(line_img, window_avg, mask)
+    time.finish()
+
+
 def main():
     path, img, mask, ground_truth = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training_one(15)
 
@@ -162,7 +179,7 @@ def main():
     # cv2.imshow('Multi', normalize_masked(multi_scale, mask))
     # cv2.imshow('Best multi', 255 - normalize_masked(best_multi, mask))
     # cv2.imshow('Multi histeq', cv2.equalizeHist(multi_scale))
-    # cv2.imshow('Ground truth', ground_truth)
+    cv2.imshow('Ground truth', ground_truth)
     # cv2.imshow('Best binary', binary)
     # cv2.imshow('Multi', normalized_masked(multi_scale_norm, mask))
     cv2.waitKey(0)
