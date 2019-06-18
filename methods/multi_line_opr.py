@@ -79,4 +79,4 @@ def main():
 
 
 if __name__ == '__main__':
-    cache_all()
+    main()
