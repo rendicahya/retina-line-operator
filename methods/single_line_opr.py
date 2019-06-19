@@ -119,23 +119,6 @@ def cache_all():
             time.finish()
 
 
-def accuracy():
-    path, img, mask, ground_truth = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training_one(15)
-
-    img = 255 - img[:, :, 1]
-    size = 15
-    time = Time()
-
-    time.start('Window average')
-    window_avg = cached_integral(path, img, mask, size)
-    time.finish()
-
-    time.start('Single')
-    line_img = cached_line(path, img, mask, size)
-    single_img = subtract(line_img, window_avg, mask)
-    time.finish()
-
-
 def main():
     path, img, mask, ground_truth = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training_one(15)
 
