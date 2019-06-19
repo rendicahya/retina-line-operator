@@ -11,7 +11,7 @@ def normalize_masked(image, mask):
     return cv2.normalize(image, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U, mask)
 
 
-def find_best_threshold(image, mask, ground):
+def find_best_threshold(image, ground, mask):
     best_acc = 0
     best_thresh = 0
     best_image = None

@@ -3,12 +3,14 @@ import os.path
 import pickle
 import sys
 
+import cv2
+import numpy as np
 import psutil
 
 from dataset.DriveDatasetLoader import DriveDatasetLoader
 from methods.line_factory import generate_lines
 from methods.window_average import cached_integral
-from util.image_util import *
+from util.image_util import normalize_masked
 from util.time import Time
 
 
