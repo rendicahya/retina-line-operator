@@ -18,20 +18,20 @@ def find_best_threshold(image, mask, ground_truth):
     best_image = None
 
     for t in range(1, 255):
-        threshold, binary = cv2.threshold(image, t, 255, cv2.THRESH_BINARY)
-        binary_array = binary[mask == 255]
-        ground_truth_array = ground_truth[mask == 255]
-        correct = np.sum(binary_array == ground_truth_array)
+        thresh, bin = cv2.threshold(image, t, 255, cv2.THRESH_BINARY)
+        bin_fov = bin[mask == 255]
+        ground_fov = ground_truth[mask == 255]
+        correct = np.sum(bin_fov == ground_fov)
 
         if correct > best_correct:
             best_correct = correct
-            best_threshold = threshold
-            best_image = binary
+            best_threshold = thresh
+            best_image = bin
 
     return best_threshold, best_image
 
 
-def find_best_threshold2(image, mask, gtruth):
+def find_best_threshold2(image, mask, ground):
     best_acc = 0
     best_thresh = 0
     best_image = None
@@ -39,8 +39,8 @@ def find_best_threshold2(image, mask, gtruth):
     for t in range(1, 255):
         thresh, bin = cv2.threshold(image, t, 255, cv2.THRESH_BINARY)
         bin_fov = bin[mask == 255]
-        gtruth_fov = gtruth[mask == 255]
-        acc = accuracy(bin_fov, gtruth_fov)
+        ground_fov = ground[mask == 255]
+        acc = accuracy(bin_fov, ground_fov)
 
         if acc > best_acc:
             best_acc = acc
