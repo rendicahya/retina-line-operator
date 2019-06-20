@@ -138,10 +138,16 @@ def classification():
     # cv2.imshow('Image', img)
     cv2.imshow('Segmentation', result_image)
     cv2.imshow('Ground truth', ground_truth)
-    cv2.imwrite('C:/Users/Randy Cahya Wihandik/Desktop/segmentation.jpg', result_image)
+    # cv2.imwrite('C:/Users/Randy Cahya Wihandik/Desktop/segmentation.jpg', result_image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':
-    # test(single)
+    path, img, mask, ground = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training_one(1)
+    size = 15
+    linestr = single(path, img, mask, size)
+
+    cv2.imshow('Image', linestr)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
