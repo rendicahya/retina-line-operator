@@ -18,6 +18,14 @@ def subtract(line, window, mask):
     return cv2.subtract(line.astype(np.float64), window, None, mask)
 
 
+def cached_single(path, img, mask, size):
+    window_avg = cached_integral(path, img, mask, size)
+    line_img = cached_line(path, img, mask, size)
+    linestr = subtract(line_img, window_avg, mask)
+
+    return linestr
+
+
 def cached_line(path, img, mask, size):
     cache_dir = os.path.dirname(path) + '/cache'
 
@@ -128,13 +136,8 @@ def main():
     size = 15
     time = Time()
 
-    time.start('Window average')
-    window_avg = cached_integral(path, img, mask, size)
-    time.finish()
-
     time.start('Single')
-    line_img = cached_line(path, img, mask, size)
-    single_img = subtract(line_img, window_avg, mask)
+    linestr = cached_single(path, img, mask, size)
     time.finish()
 
     # time.start('Single scale + wing')
@@ -142,7 +145,7 @@ def main():
     # time.finish()
 
     # time.start('Find best threshold')
-    # best_single_thresh, best_single = find_best_threshold(single_img, mask, ground_truth)
+    # best_single_thresh, best_single = find_best_threshold(linestr, mask, ground_truth)
     # time.finish()
 
     # time.start('Multi scale')
@@ -158,7 +161,7 @@ def main():
 
     cv2.imshow('Image', img)
     # cv2.imshow('Window average', normalize_masked(window_avg, mask))
-    cv2.imshow('Single', normalize_masked(single_img, mask))
+    cv2.imshow('Single', normalize_masked(linestr, mask))
     # cv2.imshow('Single + wing', normalize_masked(255 - single_scale_wing, mask))
     # cv2.imshow('Single best', 255 - normalize_masked(best_single, mask))
     # cv2.imshow('Multi', normalize_masked(multi_scale, mask))
