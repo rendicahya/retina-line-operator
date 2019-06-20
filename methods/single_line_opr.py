@@ -21,9 +21,8 @@ def subtract(line, window, mask):
 def cached_single(path, img, mask, size):
     window_avg = cached_integral(path, img, mask, size)
     line_img = cached_line(path, img, mask, size)
-    linestr = subtract(line_img, window_avg, mask)
 
-    return linestr
+    return subtract(line_img, window_avg, mask)
 
 
 def cached_line(path, img, mask, size):
