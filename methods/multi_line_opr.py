@@ -1,6 +1,8 @@
 import os.path
 import pickle
 
+import numpy as np
+
 from dataset.DriveDatasetLoader import DriveDatasetLoader
 from methods.single_line_opr import subtract, cached_line
 from methods.window_average import cached_integral
