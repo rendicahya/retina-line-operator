@@ -4,9 +4,81 @@ from sklearn import svm
 from sklearn.metrics import accuracy_score
 
 from classification.FeatureExtractor import FeatureExtractor
+from dataset import DriveDatasetLoader
 from dataset.DriveDatasetLoader import DriveDatasetLoader
+from methods.single_line_opr import cached_line, subtract
+from methods.multi_line_opr import cached_multi
+from methods.window_average import cached_integral
+from util.data_util import accuracy
+from util.image_util import normalize_masked
 from util.print_color import *
 from util.time import Time
+
+
+def test_single():
+    best_acc = 0
+    best_thresh = 0
+    size = 15
+
+    for thresh in range(1, 255):
+        acc_list = []
+
+        for path, img, mask, ground in DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing():
+            img = 255 - img[:, :, 1]
+            time = Time()
+
+            time.start(path)
+            window_avg = cached_integral(path, img, mask, size)
+            line_img = cached_line(path, img, mask, size)
+            linestr = subtract(line_img, window_avg, mask)
+            linestr = normalize_masked(linestr, mask)
+            bin = cv2.threshold(linestr, thresh, 255, cv2.THRESH_BINARY)[1]
+            acc = accuracy(bin, ground)
+
+            acc_list.append(acc)
+            time.finish()
+
+        avg = np.average(acc_list)
+
+        if avg > best_acc:
+            best_acc = avg
+            best_thresh = thresh
+
+        print(f'')
+
+    print(f'Best threshold: {best_thresh}')
+    print(f'Best accuracy: {best_acc}')
+
+
+def test_multi():
+    best_acc = 0
+    best_thresh = 0
+    size = 15
+
+    for thresh in range(1, 255):
+        acc_list = []
+
+        for path, img, mask, ground in DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing():
+            img = 255 - img[:, :, 1]
+            time = Time()
+
+            time.start(path)
+            linestr = cached_multi(path, img, mask, size)
+            linestr = normalize_masked(linestr, mask)
+            bin = cv2.threshold(linestr, thresh, 255, cv2.THRESH_BINARY)[1]
+            acc = accuracy(bin, ground)
+
+            acc_list.append(acc)
+            time.finish()
+
+        avg = np.average(acc_list)
+
+        if avg > best_acc:
+            best_acc = avg
+            best_thresh = thresh
+
+    print(f'Best threshold: {best_thresh}')
+    print(f'Best accuracy: {best_acc}')
 
 
 def main():
