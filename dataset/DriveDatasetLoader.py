@@ -30,8 +30,12 @@ class DriveDatasetLoader:
         return self.load(img_path, mask_path, gtruth_path)
 
     def load_training(self):
+        data = []
+
         for data_id in range(1, 21):
-            yield self.load_training_one(data_id)
+            data.append(self.load_training_one(data_id))
+
+        return data
 
     def load_testing_one(self, data_id):
         img_path = '%s/test/images/%02d_test.tif' % (self.dir, data_id)
@@ -41,5 +45,9 @@ class DriveDatasetLoader:
         return self.load(img_path, mask_path, gtruth_path)
 
     def load_testing(self):
+        data = []
+
         for data_id in range(1, 21):
-            yield self.load_testing_one(data_id)
+            data.append(self.load_testing_one(data_id))
+
+        return data

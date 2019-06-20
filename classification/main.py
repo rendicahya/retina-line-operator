@@ -15,19 +15,21 @@ from util.print_color import *
 from util.time import Time
 
 
-def test(op):
+def test(op, data):
     best_acc = 0
     best_thresh = 0
     size = 15
 
+    time = Time()
+
     for thresh in range(1, 255):
         acc_list = []
 
-        for path, img, mask, ground in DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing():
-            img = 255 - img[:, :, 1]
-            time = Time()
+        time.start(thresh)
 
-            time.start(path)
+        for path, img, mask, ground in data:
+            img = 255 - img[:, :, 1]
+
             linestr = op(path, img, mask, size)
             bin = cv2.threshold(linestr, thresh, 255, cv2.THRESH_BINARY)[1]
             bin_fov = bin[mask == 255]
@@ -35,7 +37,6 @@ def test(op):
             acc = accuracy(bin_fov, ground_fov)
 
             acc_list.append(acc)
-            time.finish()
 
         avg = np.average(acc_list)
 
@@ -43,7 +44,8 @@ def test(op):
             best_acc = avg
             best_thresh = thresh
 
-        print(f'{thresh} {avg}')
+        time.finish()
+        print(f'{avg}')
 
     print(f'Best threshold: {best_thresh}')
     print(f'Best accuracy: {best_acc}')
@@ -142,10 +144,10 @@ def classification():
 
 
 if __name__ == '__main__':
-    path, img, mask, ground = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training_one(1)
-    size = 15
-    linestr = single(path, img, mask, size)
+    data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
 
-    cv2.imshow('Image', linestr)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    test(single, data)
+
+    # cv2.imshow('Image', linestr)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
