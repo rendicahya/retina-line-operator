@@ -53,16 +53,14 @@ def single(path, img, mask, size):
     window_avg = cached_integral(path, img, mask, size)
     line_img = cached_line(path, img, mask, size)
     linestr = subtract(line_img, window_avg, mask)
-    linestr = normalize_masked(linestr, mask)
 
-    return linestr
+    return normalize_masked(linestr, mask)
 
 
 def multi(path, img, mask, size):
     linestr = cached_multi(path, img, mask, size)
-    linestr = normalize_masked(linestr, mask)
 
-    return linestr
+    return normalize_masked(linestr, mask)
 
 
 def classification():
