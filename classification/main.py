@@ -6,8 +6,8 @@ from sklearn.metrics import accuracy_score
 from classification.FeatureExtractor import FeatureExtractor
 from dataset import DriveDatasetLoader
 from dataset.DriveDatasetLoader import DriveDatasetLoader
-from methods.single_line_opr import cached_line, subtract
 from methods.multi_line_opr import cached_multi
+from methods.single_line_opr import cached_line, subtract
 from methods.window_average import cached_integral
 from util.data_util import accuracy
 from util.image_util import normalize_masked
@@ -15,7 +15,7 @@ from util.print_color import *
 from util.time import Time
 
 
-def test_single():
+def test(op):
     best_acc = 0
     best_thresh = 0
     size = 15
@@ -28,12 +28,11 @@ def test_single():
             time = Time()
 
             time.start(path)
-            window_avg = cached_integral(path, img, mask, size)
-            line_img = cached_line(path, img, mask, size)
-            linestr = subtract(line_img, window_avg, mask)
-            linestr = normalize_masked(linestr, mask)
+            linestr = op(path, img, mask, size)
             bin = cv2.threshold(linestr, thresh, 255, cv2.THRESH_BINARY)[1]
-            acc = accuracy(bin, ground)
+            bin_fov = bin[mask == 255]
+            ground_fov = ground[mask == 255]
+            acc = accuracy(bin_fov, ground_fov)
 
             acc_list.append(acc)
             time.finish()
@@ -44,44 +43,29 @@ def test_single():
             best_acc = avg
             best_thresh = thresh
 
-        print(f'')
+        print(f'{thresh} {avg}')
 
     print(f'Best threshold: {best_thresh}')
     print(f'Best accuracy: {best_acc}')
 
 
-def test_multi():
-    best_acc = 0
-    best_thresh = 0
-    size = 15
+def single(path, img, mask, size):
+    window_avg = cached_integral(path, img, mask, size)
+    line_img = cached_line(path, img, mask, size)
+    linestr = subtract(line_img, window_avg, mask)
+    linestr = normalize_masked(linestr, mask)
 
-    for thresh in range(1, 255):
-        acc_list = []
-
-        for path, img, mask, ground in DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing():
-            img = 255 - img[:, :, 1]
-            time = Time()
-
-            time.start(path)
-            linestr = cached_multi(path, img, mask, size)
-            linestr = normalize_masked(linestr, mask)
-            bin = cv2.threshold(linestr, thresh, 255, cv2.THRESH_BINARY)[1]
-            acc = accuracy(bin, ground)
-
-            acc_list.append(acc)
-            time.finish()
-
-        avg = np.average(acc_list)
-
-        if avg > best_acc:
-            best_acc = avg
-            best_thresh = thresh
-
-    print(f'Best threshold: {best_thresh}')
-    print(f'Best accuracy: {best_acc}')
+    return linestr
 
 
-def main():
+def multi(path, img, mask, size):
+    linestr = cached_multi(path, img, mask, size)
+    linestr = normalize_masked(linestr, mask)
+
+    return linestr
+
+
+def classification():
     drive = DriveDatasetLoader('D:/Datasets/DRIVE', 10)
     N_FEATURES = 1000
     all_fg_feat = None
@@ -160,4 +144,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # test(single)
