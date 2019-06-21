@@ -2,8 +2,7 @@ import cv2
 import numpy as np
 
 from methods.multi_line_opr import cached_multi
-from methods.single_line_opr import subtract, cached_line
-from methods.window_average import cached_integral
+from methods.single_line_opr import cached_single
 from util.data_util import normalize
 
 
@@ -30,14 +29,14 @@ class FeatureExtractor:
             self.selected_bg_idx = tuple(selected_bg_idx.T)
 
     def get_pixel_feat(self):
-        fov_data = self.image[self.mask == 255]
-        norm_fov_data = normalize(fov_data).ravel()
+        fov = self.image[self.mask == 255]
+        norm_fov = normalize(fov).ravel()
 
         if self.selected_fg_idx is None or self.selected_bg_idx is None:
-            return norm_fov_data
+            return norm_fov
         else:
             norm_image = np.zeros(self.mask.shape, np.float64)
-            norm_image[self.mask == 255] = norm_fov_data
+            norm_image[self.mask == 255] = norm_fov
 
             fg_feat = norm_image[self.selected_fg_idx]
             bg_feat = norm_image[self.selected_bg_idx]
@@ -46,15 +45,15 @@ class FeatureExtractor:
 
     def get_gaussian_feat(self):
         kernels = [(i, i) for i in range(3, 13, 2)]
-        filtered_images = [cv2.GaussianBlur(self.image, kernel, 0) for kernel in kernels]
+        filtered = [cv2.GaussianBlur(self.image, kernel, 0) for kernel in kernels]
 
         if self.selected_fg_idx is None or self.selected_bg_idx is None:
-            return np.dstack(filtered_images)
+            return np.dstack(filtered)
         else:
-            fg_feat = [image[self.selected_fg_idx] for image in filtered_images]
+            fg_feat = [img[self.selected_fg_idx] for img in filtered]
             fg_feat = np.column_stack(fg_feat)
 
-            bg_feat = [image[self.selected_bg_idx] for image in filtered_images]
+            bg_feat = [img[self.selected_bg_idx] for img in filtered]
             bg_feat = np.column_stack(bg_feat)
 
             return fg_feat, bg_feat
@@ -78,11 +77,9 @@ class FeatureExtractor:
             return features
 
     def get_single_linestr_feat(self):
-        window = cached_integral(self.path, self.image, self.mask, self.size)
-        line = cached_line(self.path, self.image, self.mask, self.size)
-        line_str = subtract(line, window, self.mask)
-        fov_data = line_str[self.mask == 255]
-        norm_fov_data = normalize(fov_data).ravel()
+        line_str = cached_single(self.path, self.image, self.mask, self.size)
+        line_str_fov = line_str[self.mask == 255]
+        norm_fov_data = normalize(line_str_fov).ravel()
 
         if self.selected_fg_idx is None or self.selected_bg_idx is None:
             return norm_fov_data
@@ -97,8 +94,8 @@ class FeatureExtractor:
 
     def get_multi_linestr_feat(self):
         line_str = cached_multi(self.path, self.image, self.mask, self.size)
-        fov_data = line_str[self.mask == 255]
-        norm_fov_data = normalize(fov_data).ravel()
+        line_str_fov = line_str[self.mask == 255]
+        norm_fov_data = normalize(line_str_fov).ravel()
 
         if self.selected_fg_idx is None or self.selected_bg_idx is None:
             return norm_fov_data
