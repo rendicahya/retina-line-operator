@@ -70,14 +70,14 @@ def classification():
     N_FEATURES = 1000
     all_fg_feat = None
     all_bg_feat = None
-    line_size = 15
+    size = 15
     time = Time()
 
     time.start('Feature extraction')
 
     for path, img, mask, ground_truth in drive.load_training():
         img = 255 - img[:, :, 1]
-        feat_extractor = FeatureExtractor(img, mask, path, line_size, ground_truth, N_FEATURES)
+        feat_extractor = FeatureExtractor(img, mask, path, size, ground_truth, N_FEATURES)
 
         pixel_feat_fg, pixel_feat_bg = feat_extractor.get_pixel_feat()
         single_fg, single_bg = feat_extractor.get_single_linestr_feat()
@@ -98,7 +98,7 @@ def classification():
         all_fg_feat = fg_feat if all_fg_feat is None else np.vstack((all_fg_feat, fg_feat))
         all_bg_feat = bg_feat if all_bg_feat is None else np.vstack((all_bg_feat, bg_feat))
 
-    all_feat = np.vstack((all_fg_feat, all_bg_feat))
+    all_feats = np.vstack((all_fg_feat, all_bg_feat))
     time.finish()
 
     target = np.append(np.repeat(1, N_FEATURES * 20), np.repeat(0, N_FEATURES * 20))
@@ -107,40 +107,40 @@ def classification():
     #                                     n_jobs=-1)
 
     time.start('Training')
-    classifier.fit(all_feat, target)
+    classifier.fit(all_feats, target)
     time.finish()
-
-    path, img, mask, ground_truth = drive.load_testing_one(1)
-    img = 255 - img[:, :, 1]
-    feat_extractor = FeatureExtractor(img, mask, path, line_size)
-
-    pixel_feat = feat_extractor.get_pixel_feat()
-    single_feat = feat_extractor.get_single_linestr_feat()
-    multi_feat = feat_extractor.get_multi_linestr_feat()
-
-    all_feat = np.column_stack((
-        pixel_feat,
-        single_feat,
-        multi_feat
-    ))
-
     time.start('Predict')
-    result = classifier.predict(all_feat)
+
+    for path, img, mask, ground_truth in drive.load_testing():
+        img = 255 - img[:, :, 1]
+        feat_extractor = FeatureExtractor(img, mask, path, size)
+
+        pixel_feat = feat_extractor.get_pixel_feat()
+        single_feat = feat_extractor.get_single_linestr_feat()
+        multi_feat = feat_extractor.get_multi_linestr_feat()
+
+        all_feats = np.column_stack((
+            pixel_feat,
+            single_feat,
+            multi_feat
+        ))
+
+        result = classifier.predict(all_feats)
+
+        result[result == 1] = 255
+        result_image = np.zeros(mask.shape, np.float64)
+        result_image[mask == 255] = result
+
+        blue('Accuracy: %f' % accuracy_score(result_image.ravel(), ground_truth.ravel()))
+        blue('Accuracy FOV: %f' % accuracy_score(result, ground_truth[mask == 255].ravel()))
+
+        # cv2.imshow('Image', img)
+        cv2.imshow('Segmentation', result_image)
+        cv2.imshow('Ground truth', ground_truth)
+        # cv2.imwrite('C:/Users/Randy Cahya Wihandik/Desktop/segmentation.jpg', result_image)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
     time.finish()
-
-    result[result == 1] = 255
-    result_image = np.zeros(mask.shape, np.float64)
-    result_image[mask == 255] = result
-
-    blue('Accuracy: %f' % accuracy_score(result_image.ravel(), ground_truth.ravel()))
-    blue('Accuracy FOV: %f' % accuracy_score(result, ground_truth[mask == 255].ravel()))
-
-    # cv2.imshow('Image', img)
-    cv2.imshow('Segmentation', result_image)
-    cv2.imshow('Ground truth', ground_truth)
-    # cv2.imwrite('C:/Users/Randy Cahya Wihandik/Desktop/segmentation.jpg', result_image)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':
