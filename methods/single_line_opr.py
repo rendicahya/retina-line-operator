@@ -35,16 +35,16 @@ def cached_line(path, img, mask, size):
 
     if os.path.exists(file_path):
         binary_file = open(file_path, mode='rb')
-        line_strength = pickle.load(binary_file)
+        line_str = pickle.load(binary_file)
     else:
-        line_strength = line(img, mask, size)
+        line_str  = line(img, mask, size)
         binary_file = open(file_path, mode='wb')
 
-        pickle.dump(line_strength, binary_file)
+        pickle.dump(line_str , binary_file)
 
     binary_file.close()
 
-    return line_strength
+    return line_str
 
 
 def line(img, mask, size):
