@@ -4,7 +4,7 @@ from sklearn import svm
 from sklearn.metrics import accuracy_score
 
 from classification.FeatureExtractor import FeatureExtractor
-from dataset import DriveDatasetLoader
+from dataset.DriveDatasetLoader import DriveDatasetLoader
 from util.print_color import blue
 from util.time import Time
 
