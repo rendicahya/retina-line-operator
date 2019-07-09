@@ -1,8 +1,8 @@
 import cv2
 import numpy as np
 
-from methods.multi_line_opr import cached
-from methods.single_line_opr import cached
+from methods.multi_line_opr import cached_multi
+from methods.single_line_opr import cached_single
 from util.data_util import normalize
 
 
@@ -77,7 +77,7 @@ class FeatureExtractor:
             return features
 
     def get_single_linestr_feat(self):
-        line_str = cached(self.path, self.image, self.mask, self.size)
+        line_str = cached_multi(self.path, self.image, self.mask, self.size)
         line_str_fov = line_str[self.mask == 255]
         norm_fov_data = normalize(line_str_fov).ravel()
 
@@ -93,7 +93,7 @@ class FeatureExtractor:
             return fg_feat, bg_feat
 
     def get_multi_linestr_feat(self):
-        line_str = cached(self.path, self.image, self.mask, self.size)
+        line_str = cached_multi(self.path, self.image, self.mask, self.size)
         line_str_fov = line_str[self.mask == 255]
         norm_fov_data = normalize(line_str_fov).ravel()
 

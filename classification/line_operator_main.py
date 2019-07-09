@@ -2,8 +2,8 @@ import cv2
 import numpy as np
 
 from dataset.DriveDatasetLoader import DriveDatasetLoader
-# from methods.single_line_opr import cached_norm
-from methods.multi_line_opr import cached_norm
+from methods.single_line_opr import cached_single_norm
+from methods.multi_line_opr import cached_multi_norm
 from util.data_util import accuracy
 from util.time import Time
 
@@ -49,7 +49,7 @@ def test(op, data):
 if __name__ == '__main__':
     data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
 
-    test(cached_norm, data)
+    test(cached_multi_norm, data)
 
     # cv2.imshow('Image', linestr)
     # cv2.waitKey(0)

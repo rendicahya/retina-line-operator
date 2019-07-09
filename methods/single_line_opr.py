@@ -18,15 +18,15 @@ def subtract(line, window, mask):
     return cv2.subtract(line.astype(np.float64), window, None, mask)
 
 
-def cached(path, img, mask, size):
+def cached_single(path, img, mask, size):
     window_avg = cached_integral(path, img, mask, size)
     line_img = cached_line(path, img, mask, size)
 
     return subtract(line_img, window_avg, mask)
 
 
-def cached_norm(path, img, mask, size):
-    line_str = cached(path, img, mask, size)
+def cached_single_norm(path, img, mask, size):
+    line_str = cached_single(path, img, mask, size)
 
     return normalize_masked(line_str, mask)
 
@@ -142,7 +142,7 @@ def main():
     time = Time()
 
     time.start('Single')
-    line_str = cached_norm(path, img, mask, size)
+    line_str = cached_single_norm(path, img, mask, size)
     bin = cv2.threshold(line_str, 65, 255, cv2.THRESH_BINARY)[1]
     time.finish()
 

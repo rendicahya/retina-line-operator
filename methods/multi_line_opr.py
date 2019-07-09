@@ -11,13 +11,13 @@ from util.image_util import normalize_masked
 from util.time import Time
 
 
-def cached_norm(path, img, mask, size):
-    linestr = cached(path, img, mask, size)
+def cached_multi_norm(path, img, mask, size):
+    linestr = cached_multi(path, img, mask, size)
 
     return normalize_masked(linestr, mask)
 
 
-def cached(path, img, mask, size):
+def cached_multi(path, img, mask, size):
     cache_dir = os.path.dirname(path) + '/cache'
 
     if not os.path.exists(cache_dir):
@@ -54,7 +54,7 @@ def save_cache():
         img = 255 - img[:, :, 1]
 
         time.start(path)
-        cached(path, img, mask, 15)
+        cached_multi(path, img, mask, 15)
         time.finish()
 
 
@@ -66,7 +66,7 @@ def main():
     time = Time()
 
     time.start('Multi scale')
-    multi_scale = cached_norm(path, img, mask, size)
+    multi_scale = cached_multi_norm(path, img, mask, size)
     time.finish()
 
     # time.start('Find best multi scale')
