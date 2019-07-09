@@ -2,7 +2,24 @@ import numpy as np
 
 
 def to_numpy_array(*args):
-    if len(args) == 1:
-        return args[0] if type(args[0]) is np.ndarray else np.array(args[0])
+    arr = [item if type(item) is np.ndarray else np.array(item) for item in args]
 
-    return [item if type(item) is np.ndarray else np.array(item) for item in args]
+    return arr[0] if len(args) == 1 else arr
+
+
+if __name__ == '__main__':
+    a = [1, 2, 3]
+    A = to_numpy_array(a)
+
+    print(type(a))
+    print(type(A))
+
+    print('---')
+
+    b = [4, 5, 6]
+    A, B = to_numpy_array(a, b)
+
+    print(type(a))
+    print(type(b))
+    print(type(A))
+    print(type(B))
