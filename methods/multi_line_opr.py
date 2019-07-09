@@ -1,16 +1,23 @@
 import os.path
 import pickle
 
+import cv2
 import numpy as np
 
 from dataset.DriveDatasetLoader import DriveDatasetLoader
 from methods.single_line_opr import subtract, cached_line
 from methods.window_average import cached_integral
-from util.image_util import *
+from util.image_util import normalize_masked
 from util.time import Time
 
 
-def cached_multi(path, img, mask, size):
+def cached_norm(path, img, mask, size):
+    linestr = cached(path, img, mask, size)
+
+    return normalize_masked(linestr, mask)
+
+
+def cached(path, img, mask, size):
     cache_dir = os.path.dirname(path) + '/cache'
 
     if not os.path.exists(cache_dir):
@@ -40,14 +47,14 @@ def multi(path, img, mask, size):
     return np.average(np.stack(line_str), axis=0)
 
 
-def cache_all():
+def save_cache():
     time = Time()
 
     for path, img, mask, ground_truth in DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing():
         img = 255 - img[:, :, 1]
 
         time.start(path)
-        cached_multi(path, img, mask, 15)
+        cached(path, img, mask, 15)
         time.finish()
 
 
@@ -59,7 +66,7 @@ def main():
     time = Time()
 
     time.start('Multi scale')
-    multi_scale = cached_multi(path, img, mask, size)
+    multi_scale = cached_norm(path, img, mask, size)
     time.finish()
 
     # time.start('Find best multi scale')
@@ -70,7 +77,7 @@ def main():
     # green('Best multi scale threshold: %d' % best_multi_thresh)
 
     cv2.imshow('Image', img)
-    cv2.imshow('Multi', normalize_masked(multi_scale, mask))
+    cv2.imshow('Multi', multi_scale)
     # cv2.imshow('Best multi', 255 - normalize_masked(best_multi, mask))
     # cv2.imshow('Multi histeq', cv2.equalizeHist(multi_scale))
     # cv2.imshow('Ground truth', ground_truth)

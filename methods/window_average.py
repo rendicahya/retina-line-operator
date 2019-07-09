@@ -1,6 +1,8 @@
 import os.path
 import pickle
 
+import numpy as np
+
 from dataset.DriveDatasetLoader import DriveDatasetLoader
 from util.image_util import *
 from util.time import Time
@@ -102,7 +104,7 @@ def integral(image, mask, window_size):
     return window_avg
 
 
-def cache_all():
+def save_cache():
     time = Time()
     size = 15
 

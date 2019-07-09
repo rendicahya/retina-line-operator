@@ -18,11 +18,17 @@ def subtract(line, window, mask):
     return cv2.subtract(line.astype(np.float64), window, None, mask)
 
 
-def cached_single(path, img, mask, size):
+def cached(path, img, mask, size):
     window_avg = cached_integral(path, img, mask, size)
     line_img = cached_line(path, img, mask, size)
 
     return subtract(line_img, window_avg, mask)
+
+
+def cached_norm(path, img, mask, size):
+    line_str = cached(path, img, mask, size)
+
+    return normalize_masked(line_str, mask)
 
 
 def cached_line(path, img, mask, size):
@@ -37,10 +43,10 @@ def cached_line(path, img, mask, size):
         binary_file = open(file_path, mode='rb')
         line_str = pickle.load(binary_file)
     else:
-        line_str  = line(img, mask, size)
+        line_str = line(img, mask, size)
         binary_file = open(file_path, mode='wb')
 
-        pickle.dump(line_str , binary_file)
+        pickle.dump(line_str, binary_file)
 
     binary_file.close()
 
@@ -112,7 +118,7 @@ def line_worker(img, bool_mask, lines, queue, cpu_count, cpu_id):
     queue.put((cpu_id, linestr))
 
 
-def cache_all():
+def save_cache():
     time = Time()
 
     for path, img, mask, ground_truth in DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing():
@@ -136,7 +142,8 @@ def main():
     time = Time()
 
     time.start('Single')
-    linestr = cached_single(path, img, mask, size)
+    line_str = cached_norm(path, img, mask, size)
+    bin = cv2.threshold(line_str, 65, 255, cv2.THRESH_BINARY)[1]
     time.finish()
 
     # time.start('Single scale + wing')
@@ -144,7 +151,7 @@ def main():
     # time.finish()
 
     # time.start('Find best threshold')
-    # best_single_thresh, best_single = find_best_threshold(linestr, mask, ground_truth)
+    # best_single_thresh, best_single = find_best_threshold(line_str, mask, ground_truth)
     # time.finish()
 
     # time.start('Multi scale')
@@ -160,14 +167,14 @@ def main():
 
     cv2.imshow('Image', img)
     # cv2.imshow('Window average', normalize_masked(window_avg, mask))
-    cv2.imshow('Single', normalize_masked(linestr, mask))
+    cv2.imshow('Single', normalize_masked(line_str, mask))
     # cv2.imshow('Single + wing', normalize_masked(255 - single_scale_wing, mask))
     # cv2.imshow('Single best', 255 - normalize_masked(best_single, mask))
     # cv2.imshow('Multi', normalize_masked(multi_scale, mask))
     # cv2.imshow('Best multi', 255 - normalize_masked(best_multi, mask))
     # cv2.imshow('Multi histeq', cv2.equalizeHist(multi_scale))
     cv2.imshow('Ground truth', ground_truth)
-    # cv2.imshow('Best binary', binary)
+    cv2.imshow('Binary', bin)
     # cv2.imshow('Multi', normalized_masked(multi_scale_norm, mask))
     cv2.waitKey(0)
     cv2.destroyAllWindows()
