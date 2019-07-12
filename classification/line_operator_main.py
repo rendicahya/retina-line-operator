@@ -5,19 +5,19 @@ from dataset.DriveDatasetLoader import DriveDatasetLoader
 from methods.single_line_opr import cached_single_norm
 from methods.multi_line_opr import cached_multi_norm
 from util.data_util import accuracy
-from util.time import Time
+from util.timer import Timer
 
 
 def test(op, data):
     best_acc = 0
     best_thresh = 0
     size = 15
-    time = Time()
+    timer = Timer()
 
     for thresh in range(1, 2):
         acc_list = []
 
-        time.start(thresh)
+        timer.start(thresh)
 
         for path, img, mask, ground in data:
             img = 255 - img[:, :, 1]
@@ -39,7 +39,7 @@ def test(op, data):
             best_acc = avg
             best_thresh = thresh
 
-        time.finish()
+        timer.finish()
         print(f'{avg}')
 
     print(f'Best threshold: {best_thresh}')

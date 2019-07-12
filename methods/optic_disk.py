@@ -10,7 +10,7 @@ import psutil
 from dataset.DriveDatasetLoader import DriveDatasetLoader
 from methods import line_factory
 from util.image_util import normalize_masked
-from util.time import Time
+from util.timer import Timer
 
 
 def cached_basic(path, img, mask, size):
@@ -110,26 +110,26 @@ def basic_worker(img, bool_mask, lines, wings, queue, cpu_count, cpu_id):
 
 
 def cache_all():
-    time = Time()
+    timer = Timer()
 
     for path, img, mask, ground_truth in DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing():
         img = 255 - img[:, :, 1]
 
         for size in range(15, 26, 2):
-            time.start('%s/%d' % (path, size))
+            timer.start('%s/%d' % (path, size))
             basic(img, mask, size)
-            time.finish()
+            timer.finish()
 
 
 def main():
     path, img, mask, ground_truth = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training_one(2)
     img = 255 - img[:, :, 1]
     size = 15
-    time = Time()
+    timer = Timer()
 
-    time.start('Optic disk')
+    timer.start('Optic disk')
     optic = cached_basic(path, img, mask, size)
-    time.finish()
+    timer.finish()
 
     optic = normalize_masked(optic, mask)
     th, optic = cv2.threshold(optic, 75, 255, cv2.THRESH_BINARY)

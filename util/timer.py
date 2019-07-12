@@ -4,7 +4,7 @@ from time import perf_counter
 from util.print_color import blue
 
 
-class Time:
+class Timer:
 
     def start(self, msg):
         self.start_time = perf_counter()

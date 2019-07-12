@@ -8,7 +8,7 @@ from dataset.DriveDatasetLoader import DriveDatasetLoader
 from methods.single_line_opr import subtract, cached_line
 from methods.window_average import cached_integral
 from util.image_util import normalize_masked
-from util.time import Time
+from util.timer import Timer
 
 
 def cached_multi_norm(path, img, mask, size):
@@ -48,7 +48,7 @@ def multi(path, img, mask, size):
 
 
 def save_cache():
-    time = Time()
+    time = Timer()
 
     for path, img, mask, ground_truth in DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing():
         img = 255 - img[:, :, 1]
@@ -63,15 +63,15 @@ def main():
 
     img = 255 - img[:, :, 1]
     size = 15
-    time = Time()
+    timer = Timer()
 
-    time.start('Multi scale')
+    timer.start('Multi scale')
     multi_scale = cached_multi_norm(path, img, mask, size)
-    time.finish()
+    timer.finish()
 
-    # time.start('Find best multi scale')
+    # timer.start('Find best multi scale')
     # best_multi_thresh, best_multi = find_best_threshold(multi_scale, mask, ground_truth)
-    # time.finish()
+    # timer.finish()
 
     # green('Best single scale threshold: %d' % best_single_thresh)
     # green('Best multi scale threshold: %d' % best_multi_thresh)

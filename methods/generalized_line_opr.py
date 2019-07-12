@@ -8,7 +8,7 @@ from dataset.DriveDatasetLoader import DriveDatasetLoader
 from methods import window_average, line_factory
 from methods.single_line_opr import subtract
 from util.image_util import *
-from util.time import Time
+from util.timer import Timer
 
 
 def cached_line(path, img, mask, size):
@@ -94,7 +94,7 @@ def line_worker(img, bool_mask, lines, queue, cpu_count, cpu_id):
 
 
 def cache_all():
-    time = Time()
+    time = Timer()
 
     for path, img, mask, ground_truth in DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training():
         img = 255 - img[:, :, 1]
@@ -111,32 +111,32 @@ def main():
 
     img = 255 - img[:, :, 1]
     size = 15
-    time = Time()
+    timer = Timer()
 
-    time.start('Window average')
+    timer.start('Window average')
     window_avg = window_average.cached_integral(path, img, mask, size)
-    time.finish()
+    timer.finish()
 
-    time.start('Single')
+    timer.start('Single')
     line_img = line(img, mask, size)
     single_img = subtract(line_img, window_avg, mask)
-    time.finish()
+    timer.finish()
 
-    # time.start('Single scale + wing')
+    # timer.start('Single scale + wing')
     # single_scale_wing = single(img, mask, window_avg, size)
-    # time.finish()
+    # timer.finish()
 
-    # time.start('Find best threshold')
+    # timer.start('Find best threshold')
     # best_single_thresh, best_single = find_best_threshold(single_img, mask, ground_truth)
-    # time.finish()
+    # timer.finish()
 
-    # time.start('Multi scale')
+    # timer.start('Multi scale')
     # multi_scale = cached_multi(path, img, mask, size)
-    # time.finish()
+    # timer.finish()
 
-    # time.start('Find best multi scale')
+    # timer.start('Find best multi scale')
     # best_multi_thresh, best_multi = find_best_threshold(multi_scale, mask, ground_truth)
-    # time.finish()
+    # timer.finish()
 
     # green('Best single scale threshold: %d' % best_single_thresh)
     # green('Best multi scale threshold: %d' % best_multi_thresh)

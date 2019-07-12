@@ -5,7 +5,7 @@ import numpy as np
 
 from dataset.DriveDatasetLoader import DriveDatasetLoader
 from util.image_util import *
-from util.time import Time
+from util.timer import Timer
 
 
 def cached_basic(path, image, mask, size):
@@ -105,30 +105,30 @@ def integral(image, mask, window_size):
 
 
 def save_cache():
-    time = Time()
+    timer = Timer()
     size = 15
 
     for path, image, mask, ground_truth in DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing():
         image = 255 - image[:, :, 1]
 
-        time.start('%s/%d' % (path, size))
+        timer.start('%s/%d' % (path, size))
         cached_integral(path, image, mask, size)
-        time.finish()
+        timer.finish()
 
 
 def main():
     path, image, mask, ground_truth = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing_one(3)
     image = 255 - image[:, :, 1]
-    time = Time()
+    timer = Timer()
     size = 15
 
-    # time.start('Basic')
+    # timer.start('Basic')
     # window_avg = basic(image, mask, size)
-    # time.finish()
+    # timer.finish()
 
-    time.start('Integral')
+    timer.start('Integral')
     window_avg = integral(image, mask, size)
-    time.finish()
+    timer.finish()
 
     cv2.imshow('Image', image)
     cv2.imshow('Window average', normalize_masked(window_avg, mask))
