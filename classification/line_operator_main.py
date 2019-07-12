@@ -8,7 +8,7 @@ from util.data_util import accuracy
 from util.timer import Timer
 
 
-def test(op, data):
+def find_best_acc_avg_all(op, data):
     best_acc = 0
     best_thresh = 0
     size = 15
@@ -49,7 +49,7 @@ def test(op, data):
 if __name__ == '__main__':
     data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
 
-    test(cached_multi_norm, data)
+    find_best_acc_avg_all(cached_multi_norm, data)
 
     # cv2.imshow('Image', linestr)
     # cv2.waitKey(0)
