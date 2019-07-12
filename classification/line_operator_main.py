@@ -6,6 +6,7 @@ from methods.single_line_opr import cached_single_norm
 from methods.multi_line_opr import cached_multi_norm
 from util.data_util import accuracy
 from util.timer import Timer
+from util.image_util import find_best_thresh
 
 
 def find_best_acc_avg_all(op, data):
@@ -21,9 +22,10 @@ def find_best_acc_avg_all(op, data):
 
         for path, img, mask, ground in data:
             img = 255 - img[:, :, 1]
-
             line_str = op(path, img, mask, size)
+
             cv2.imshow(path, line_str)
+
             bin = cv2.threshold(line_str, thresh, 255, cv2.THRESH_BINARY)[1]
             bin_fov = bin[mask == 255]
             ground_fov = ground[mask == 255]
@@ -44,6 +46,18 @@ def find_best_acc_avg_all(op, data):
 
     print(f'Best threshold: {best_thresh}')
     print(f'Best accuracy: {best_acc}')
+
+
+def find_best_acc_avg_each(op, data):
+    acc_list = []
+    size = 15
+
+    for path, img, mask, ground in data:
+        img = 255 - img[:, :, 1]
+        line_str = op(path, img, mask, size)
+        acc = find_best_thresh(img, ground, mask)
+
+        acc_list.append()
 
 
 if __name__ == '__main__':
