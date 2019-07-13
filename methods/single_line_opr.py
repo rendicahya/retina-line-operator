@@ -91,7 +91,7 @@ def line_worker(img, bool_mask, lines, queue, cpu_count, cpu_id):
 
             max_line_avg = -sys.maxsize - 1
 
-            for angle, line in enumerate(lines):
+            for line in lines:
                 line_count = 0
                 line_sum = 0
 
@@ -109,9 +109,7 @@ def line_worker(img, bool_mask, lines, queue, cpu_count, cpu_id):
                     continue
 
                 line_avg = line_sum / line_count
-
-                if line_avg > max_line_avg:
-                    max_line_avg = line_avg
+                max_line_avg = max(line_avg, max_line_avg)
 
             linestr[Y - y_start, X] = max_line_avg
 

@@ -79,7 +79,7 @@ def basic_worker(image, bool_mask, lines, queue, cpu_count, cpu_id):
             min_line_avg = sys.maxsize
             max_line_avg = -sys.maxsize - 1
 
-            for angle, line in enumerate(lines):
+            for line in lines:
                 pixel_count = 0
                 pixel_sum = 0
 
@@ -125,7 +125,8 @@ def main():
     timer = Timer()
 
     timer.start('Minmax')
-    single_scale = basic(image, mask, size)
+    # line_str = basic(image, mask, size)
+    line_str = cached_basic_norm(path, image, mask, size)
     timer.finish()
 
     # timer.start('Single scale + wing')
@@ -133,7 +134,7 @@ def main():
     # timer.finish()
 
     # timer.start('Find best threshold')
-    # best_single_thresh, best_single = find_best_threshold(single_scale, mask, ground_truth)
+    # best_single_thresh, best_single = find_best_threshold(line_str, mask, ground_truth)
     # timer.finish()
 
     # timer.start('Multi scale')
@@ -148,7 +149,7 @@ def main():
     # green('Best multi scale threshold: %d' % best_multi_thresh)
 
     cv2.imshow('Image', image)
-    cv2.imshow('Minmax', normalize_masked(single_scale, mask))
+    cv2.imshow('Minmax', normalize_masked(line_str, mask))
     # cv2.imshow('Single scale + wing', normalize_masked(255 - single_scale_wing, mask))
     # cv2.imshow('Single scale best', 255 - normalize_masked(best_single, mask))
     # cv2.imshow('Multi scale', normalize_masked(multi_scale, mask))
