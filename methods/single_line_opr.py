@@ -135,7 +135,7 @@ def save_cache():
 
 
 def main():
-    path, img, mask, ground_truth = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training_one(15)
+    path, img, mask, ground_truth = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training_one(1)
 
     img = 255 - img[:, :, 1]
     size = 15
@@ -143,7 +143,7 @@ def main():
 
     timer.start('Single')
     line_str = cached_single_norm(path, img, mask, size)
-    bin = cv2.threshold(line_str, 65, 255, cv2.THRESH_BINARY)[1]
+    # bin = cv2.threshold(line_str, 65, 255, cv2.THRESH_BINARY)[1]
     timer.finish()
 
     # timer.start('Single scale + wing')
@@ -167,14 +167,14 @@ def main():
 
     cv2.imshow('Image', img)
     # cv2.imshow('Window average', normalize_masked(window_avg, mask))
-    cv2.imshow('Single', normalize_masked(line_str, mask))
+    cv2.imshow('Single', line_str)
     # cv2.imshow('Single + wing', normalize_masked(255 - single_scale_wing, mask))
     # cv2.imshow('Single best', 255 - normalize_masked(best_single, mask))
     # cv2.imshow('Multi', normalize_masked(multi_scale, mask))
     # cv2.imshow('Best multi', 255 - normalize_masked(best_multi, mask))
     # cv2.imshow('Multi histeq', cv2.equalizeHist(multi_scale))
-    cv2.imshow('Ground truth', ground_truth)
-    cv2.imshow('Binary', bin)
+    # cv2.imshow('Ground truth', ground_truth)
+    # cv2.imshow('Binary', bin)
     # cv2.imshow('Multi', normalized_masked(multi_scale_norm, mask))
     cv2.waitKey(0)
     cv2.destroyAllWindows()

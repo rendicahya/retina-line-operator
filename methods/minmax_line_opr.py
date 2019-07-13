@@ -12,32 +12,38 @@ from util.image_util import *
 from util.timer import Timer
 
 
-def cached_basic(path, image, mask, window_size):
+def cached_basic_norm(path, image, mask, size):
+    line_str = cached_basic(path, image, mask, size)
+
+    return normalize_masked(line_str, mask)
+
+
+def cached_basic(path, image, mask, size):
     cache_dir = os.path.dirname(path) + '/cache'
 
     if not os.path.exists(cache_dir):
         os.mkdir(cache_dir)
 
-    file_path = '%s/minmax-%s-%d.bin' % (cache_dir, os.path.basename(path), window_size)
+    file_path = '%s/minmax-%s-%d.bin' % (cache_dir, os.path.basename(path), size)
 
     if os.path.exists(file_path):
-        binary_file = open(file_path, mode='rb')
-        line_strength = pickle.load(binary_file)
+        bin_file = open(file_path, mode='rb')
+        line_str = pickle.load(bin_file)
     else:
-        line_strength = basic(image, mask, window_size)
-        binary_file = open(file_path, mode='wb')
+        line_str = basic(image, mask, size)
+        bin_file = open(file_path, mode='wb')
 
-        pickle.dump(line_strength, binary_file)
+        pickle.dump(line_str, bin_file)
 
-    binary_file.close()
+    bin_file.close()
 
-    return line_strength
+    return line_str
 
 
-def basic(image, mask, window_size):
+def basic(image, mask, size):
     image = image.astype(np.int16)
     bool_mask = mask.astype(np.bool)
-    lines, wings = line_factory.generate_lines(window_size)
+    lines, wings = line_factory.generate_lines(size)
 
     queue = mp.Queue()
     cpu_count = psutil.cpu_count()
@@ -74,8 +80,8 @@ def basic_worker(image, bool_mask, lines, queue, cpu_count, cpu_id):
             max_line_avg = -sys.maxsize - 1
 
             for angle, line in enumerate(lines):
-                line_count = 0
-                line_sum = 0
+                pixel_count = 0
+                pixel_sum = 0
 
                 for pixel in line:
                     x = X + pixel[0]
@@ -84,26 +90,22 @@ def basic_worker(image, bool_mask, lines, queue, cpu_count, cpu_id):
                     if x < 0 or x >= width or y < 0 or y >= height or not bool_mask[y, x]:
                         continue
 
-                    line_count += 1
-                    line_sum += image[y, x]
+                    pixel_count += 1
+                    pixel_sum += image[y, x]
 
-                if line_count == 0:
+                if pixel_count == 0:
                     continue
 
-                line_avg = line_sum / line_count
-
-                if line_avg < min_line_avg:
-                    min_line_avg = line_avg
-
-                if line_avg > max_line_avg:
-                    max_line_avg = line_avg
+                line_avg = pixel_sum / pixel_count
+                min_line_avg = min(line_avg, min_line_avg)
+                max_line_avg = max(line_avg, max_line_avg)
 
             minmax[Y - y_start, X] = max_line_avg - min_line_avg
 
     queue.put((cpu_id, minmax))
 
 
-def cache_all():
+def save_cache():
     timer = Timer()
 
     for path, image, mask, ground_truth in DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing():
