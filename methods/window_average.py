@@ -74,17 +74,17 @@ def cached_integral(path, image, mask, size):
     return image
 
 
-def integral(image, mask, window_size):
-    height, width = image.shape[:2]
+def integral(img, mask, window_size):
+    height, width = img.shape[:2]
     half = window_size // 2
     window_avg = np.zeros((height, width), np.float64)
 
-    image = cv2.bitwise_and(image, image, mask=mask)
-    image_integral = np.cumsum(np.cumsum(image, 0), 1).astype(np.int32)
+    img = cv2.bitwise_and(img, img, mask=mask)
+    img_integral = np.cumsum(np.cumsum(img, 0), 1).astype(np.uint32)
 
     mask[mask > 0] = 1
     bool_mask = mask.astype(np.bool)
-    mask_integral = np.cumsum(np.cumsum(mask, 0), 1).astype(np.int32)
+    mask_integral = np.cumsum(np.cumsum(mask, 0), 1).astype(np.uint32)
 
     for Y in range(height):
         for X in range(width):
@@ -96,7 +96,7 @@ def integral(image, mask, window_size):
             c = Y + half, X - half - 1
             d = Y + half, X + half
 
-            image_sum = image_integral[d] - image_integral[b] - image_integral[c] + image_integral[a]
+            image_sum = img_integral[d] - img_integral[b] - img_integral[c] + img_integral[a]
             mask_sum = mask_integral[d] - mask_integral[b] - mask_integral[c] + mask_integral[a]
 
             window_avg[Y, X] = image_sum / mask_sum
@@ -117,7 +117,7 @@ def save_cache():
 
 
 def main():
-    path, image, mask, ground_truth = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing_one(3)
+    path, image, mask, ground_truth = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing_one(1)
     image = 255 - image[:, :, 1]
     timer = Timer()
     size = 15
