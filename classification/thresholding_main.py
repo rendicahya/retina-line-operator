@@ -41,7 +41,7 @@ def find_best_acc_avg_all(op, data):
             best_acc = avg
             best_thresh = thresh
 
-        timer.finish()
+        timer.stop()
         print(f'{avg}')
 
     print(f'Best threshold: {best_thresh}')

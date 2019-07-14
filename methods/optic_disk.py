@@ -118,7 +118,7 @@ def cache_all():
         for size in range(15, 26, 2):
             timer.start('%s/%d' % (path, size))
             basic(img, mask, size)
-            timer.finish()
+            timer.stop()
 
 
 def main():
@@ -129,7 +129,7 @@ def main():
 
     timer.start('Optic disk')
     optic = cached_basic(path, img, mask, size)
-    timer.finish()
+    timer.stop()
 
     optic = normalize_masked(optic, mask)
     th, optic = cv2.threshold(optic, 75, 255, cv2.THRESH_BINARY)

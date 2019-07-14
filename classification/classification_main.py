@@ -43,7 +43,7 @@ def proposed():
         all_bg_feat = bg_feat if all_bg_feat is None else np.vstack((all_bg_feat, bg_feat))
 
     all_feats = np.vstack((all_fg_feat, all_bg_feat))
-    timer.finish()
+    timer.stop()
 
     target = np.append(np.repeat(1, N_FEATURES * 20), np.repeat(0, N_FEATURES * 20))
     classifier = svm.SVC()
@@ -52,7 +52,7 @@ def proposed():
 
     timer.start('Training')
     classifier.fit(all_feats, target)
-    timer.finish()
+    timer.stop()
     timer.start('Predict')
 
     for path, img, mask, ground_truth in drive.load_testing():
@@ -84,7 +84,7 @@ def proposed():
         # cv2.imwrite('C:/Users/Randy Cahya Wihandik/Desktop/segmentation.jpg', result_image)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
-    timer.finish()
+    timer.stop()
 
 
 if __name__ == '__main__':

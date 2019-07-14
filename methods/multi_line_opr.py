@@ -55,7 +55,7 @@ def save_cache():
 
         time.start(path)
         cached_multi(path, img, mask, 15)
-        time.finish()
+        time.stop()
 
 
 def main():
@@ -67,7 +67,7 @@ def main():
 
     timer.start('Multi scale')
     multi_scale = cached_multi_norm(path, img, mask, size)
-    timer.finish()
+    timer.stop()
 
     # timer.start('Find best multi scale')
     # best_multi_thresh, best_multi = find_best_threshold(multi_scale, mask, ground_truth)

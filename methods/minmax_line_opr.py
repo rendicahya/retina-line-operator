@@ -65,8 +65,8 @@ def basic(image, mask, size):
     return np.vstack(slices)
 
 
-def basic_worker(image, bool_mask, lines, queue, cpu_count, cpu_id):
-    height, width = image.shape[:2]
+def basic_worker(img, bool_mask, lines, queue, cpu_count, cpu_id):
+    height, width = img.shape[:2]
     slice_height = height // cpu_count
     y_start = cpu_id * slice_height
     minmax = np.zeros((slice_height, width), np.int16)
@@ -91,7 +91,7 @@ def basic_worker(image, bool_mask, lines, queue, cpu_count, cpu_id):
                         continue
 
                     pixel_count += 1
-                    pixel_sum += image[y, x]
+                    pixel_sum += img[y, x]
 
                 if pixel_count == 0:
                     continue
@@ -114,7 +114,7 @@ def save_cache():
         for size in range(1, 26, 2):
             timer.start('%s/%d' % (path, size))
             cached_basic(path, image, mask, size)
-            timer.finish()
+            timer.stop()
 
 
 def main():
@@ -127,7 +127,7 @@ def main():
     timer.start('Minmax')
     # line_str = basic(image, mask, size)
     line_str = cached_basic_norm(path, image, mask, size)
-    timer.finish()
+    timer.stop()
 
     # timer.start('Single scale + wing')
     # single_scale_wing = single(image, mask, window_avg, size)

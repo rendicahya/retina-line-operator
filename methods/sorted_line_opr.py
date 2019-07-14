@@ -63,7 +63,7 @@ def line_worker(img, bool_mask, lines, queue, cpu_count, cpu_id):
     height, width = img.shape[:2]
     slice_height = height // cpu_count
     y_start = cpu_id * slice_height
-    line_str = np.zeros((slice_height, width, ???), np.int16)
+    line_str = np.zeros((slice_height, width, len(lines)), np.int16)
     temp_line_str = np.array(len(lines), np.float16)
 
     for Y in range(y_start, (cpu_id + 1) * slice_height):

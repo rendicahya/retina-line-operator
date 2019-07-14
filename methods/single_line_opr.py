@@ -9,7 +9,7 @@ import psutil
 
 from dataset.DriveDatasetLoader import DriveDatasetLoader
 from methods.line_factory import generate_lines
-from methods.window_average import cached_integral
+from methods.window_average import cached_integral, integral
 from util.image_util import normalize_masked
 from util.timer import Timer
 
@@ -54,7 +54,7 @@ def cached_line(path, img, mask, size):
 
 
 def line(img, mask, size):
-    img = img.astype(np.int16)
+    # img = img.astype(np.int16)
     bool_mask = mask.astype(np.bool)
     lines, wings = generate_lines(size)
 
@@ -82,7 +82,7 @@ def line_worker(img, bool_mask, lines, queue, cpu_count, cpu_id):
     height, width = img.shape[:2]
     slice_height = height // cpu_count
     y_start = cpu_id * slice_height
-    linestr = np.zeros((slice_height, width), np.int16)
+    line_str = np.zeros((slice_height, width), np.float64)
 
     for Y in range(y_start, (cpu_id + 1) * slice_height):
         for X in range(width):
@@ -111,9 +111,9 @@ def line_worker(img, bool_mask, lines, queue, cpu_count, cpu_id):
                 line_avg = line_sum / line_count
                 max_line_avg = max(line_avg, max_line_avg)
 
-            linestr[Y - y_start, X] = max_line_avg
+            line_str[Y - y_start, X] = max_line_avg
 
-    queue.put((cpu_id, linestr))
+    queue.put((cpu_id, line_str))
 
 
 def save_cache():
@@ -124,12 +124,12 @@ def save_cache():
 
         time.start(f'Window: {path} [15]')
         cached_integral(path, img, mask, 15)
-        time.finish()
+        time.stop()
 
         for size in range(1, 16, 2):
             time.start(f'Line: {path} [{size}]')
             cached_line(path, img, mask, size)
-            time.finish()
+            time.stop()
 
 
 def main():
@@ -139,10 +139,16 @@ def main():
     size = 15
     timer = Timer()
 
+    timer.start('Window')
+    window = integral(img, mask, size)
+    timer.stop()
+
     timer.start('Single')
-    line_str = cached_single_norm(path, img, mask, size)
+    line_str = line(img, mask, size)
+    line_str = subtract(line_str, window, mask)
+    line_str = normalize_masked(line_str, mask)
     # bin = cv2.threshold(line_str, 65, 255, cv2.THRESH_BINARY)[1]
-    timer.finish()
+    timer.stop()
 
     # timer.start('Single scale + wing')
     # single_scale_wing = single(img, mask, window_avg, size)

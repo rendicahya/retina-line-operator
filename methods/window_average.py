@@ -113,7 +113,7 @@ def save_cache():
 
         timer.start('%s/%d' % (path, size))
         cached_integral(path, image, mask, size)
-        timer.finish()
+        timer.stop()
 
 
 def main():
@@ -128,7 +128,7 @@ def main():
 
     timer.start('Integral')
     window_avg = integral(image, mask, size)
-    timer.finish()
+    timer.stop()
 
     cv2.imshow('Image', image)
     cv2.imshow('Window average', normalize_masked(window_avg, mask))

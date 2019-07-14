@@ -10,7 +10,7 @@ class Timer:
         self.start_time = perf_counter()
         blue(f'{msg}: ', end='')
 
-    def finish(self):
+    def stop(self):
         time = perf_counter() - self.start_time
         min = time // 60
         sec = floor(time % 60)
