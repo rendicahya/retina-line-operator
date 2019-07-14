@@ -109,7 +109,7 @@ def cache_all():
 
 
 def main():
-    path, img, mask, ground_truth = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training_one(1)
+    path, img, mask, ground = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training_one(1)
 
     img = 255 - img[:, :, 1]
     size = 15
@@ -120,7 +120,7 @@ def main():
     timer.stop()
 
     timer.start('Single')
-    statistics = line(img, mask, size)
+    statistics = cached_line(path, img, mask, size)
     maxi = statistics[..., 0]
     mini = statistics[..., 1]
     mean = statistics[..., 2]
@@ -132,7 +132,7 @@ def main():
     # timer.finish()
 
     # timer.start('Find best threshold')
-    # best_single_thresh, best_single = find_best_threshold(result, mask, ground_truth)
+    # best_single_thresh, best_single = find_best_threshold(result, mask, ground)
     # timer.finish()
 
     # timer.start('Multi scale')
@@ -140,7 +140,7 @@ def main():
     # timer.finish()
 
     # timer.start('Find best multi scale')
-    # best_multi_thresh, best_multi = find_best_threshold(multi_scale, mask, ground_truth)
+    # best_multi_thresh, best_multi = find_best_threshold(multi_scale, mask, ground)
     # timer.finish()
 
     # green('Best single scale threshold: %d' % best_single_thresh)
@@ -150,6 +150,7 @@ def main():
     # cv2.imshow('Window average', normalize_masked(window_avg, mask))
     cv2.imshow('Max', normalize_masked(maxi, mask))
     cv2.imshow('Max-window', normalize_masked(subtract(maxi, window_avg, mask), mask))
+    cv2.imshow('Max-window-thresh', normalize_masked(find_best_thresh(subtract(maxi, window_avg, mask), ground, mask)[1], mask))
     cv2.imshow('Min', normalize_masked(mini, mask))
     cv2.imshow('Min-window', normalize_masked(subtract(mini, window_avg, mask), mask))
     cv2.imshow('Mean', normalize_masked(mean, mask))
@@ -161,7 +162,7 @@ def main():
     # cv2.imshow('Multi', normalize_masked(multi_scale, mask))
     # cv2.imshow('Best multi', 255 - normalize_masked(best_multi, mask))
     # cv2.imshow('Multi histeq', cv2.equalizeHist(multi_scale))
-    # cv2.imshow('Ground truth', ground_truth)
+    # cv2.imshow('Ground truth', ground)
     # cv2.imshow('Best binary', binary)
     # cv2.imshow('Multi', normalized_masked(multi_scale_norm, mask))
     cv2.waitKey(0)
