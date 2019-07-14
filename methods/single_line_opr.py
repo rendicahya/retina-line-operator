@@ -9,7 +9,7 @@ import psutil
 
 from dataset.DriveDatasetLoader import DriveDatasetLoader
 from methods.line_factory import generate_lines
-from methods.window_average import cached_integral, integral
+from methods.window_average import cached_integral
 from util.image_util import normalize_masked
 from util.timer import Timer
 
@@ -54,7 +54,6 @@ def cached_line(path, img, mask, size):
 
 
 def line(img, mask, size):
-    # img = img.astype(np.int16)
     bool_mask = mask.astype(np.bool)
     lines, wings = generate_lines(size)
 
@@ -140,11 +139,11 @@ def main():
     timer = Timer()
 
     timer.start('Window')
-    window = integral(img, mask, size)
+    window = cached_integral(path, img, mask, size)
     timer.stop()
 
     timer.start('Single')
-    line_str = line(img, mask, size)
+    line_str = cached_line(path, img, mask, size)
     line_str = subtract(line_str, window, mask)
     line_str = normalize_masked(line_str, mask)
     # bin = cv2.threshold(line_str, 65, 255, cv2.THRESH_BINARY)[1]

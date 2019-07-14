@@ -18,7 +18,7 @@ def cached_line(path, img, mask, size):
     if not os.path.exists(cache_dir):
         os.mkdir(cache_dir)
 
-    file_path = '%s/line-%s-%d.bin' % (cache_dir, os.path.basename(path), size)
+    file_path = '%s/generalized-%s-%d.bin' % (cache_dir, os.path.basename(path), size)
 
     if os.path.exists(file_path):
         binary_file = open(file_path, mode='rb')
@@ -63,8 +63,8 @@ def line_worker(img, bool_mask, lines, queue, cpu_count, cpu_id):
     height, width = img.shape[:2]
     slice_height = height // cpu_count
     y_start = cpu_id * slice_height
-    line_str = np.zeros((slice_height, width, ???), np.int16)
-    temp_line_str = np.array(len(lines), np.float16)
+    line_str = np.zeros((slice_height, width, 4), np.float64)
+    temp_line_str = np.empty(len(lines), np.float64)
 
     for Y in range(y_start, (cpu_id + 1) * slice_height):
         for X in range(width):
@@ -87,9 +87,10 @@ def line_worker(img, bool_mask, lines, queue, cpu_count, cpu_id):
 
                 temp_line_str[angle] = pixel_sum / pixel_count
 
-            temp_line_str.sort()
-
-            line_str[Y - y_start, X] = np.copy(temp_line_str)
+            line_str[Y - y_start, X] = [np.max(temp_line_str),
+                                        np.min(temp_line_str),
+                                        np.average(temp_line_str),
+                                        np.std(temp_line_str)]
 
     queue.put((cpu_id, line_str))
 
@@ -119,8 +120,11 @@ def main():
     timer.stop()
 
     timer.start('Single')
-    line_img = line(img, mask, size)
-    single_img = subtract(line_img, window_avg, mask)
+    statistics = line(img, mask, size)
+    maxi = statistics[..., 0]
+    mini = statistics[..., 1]
+    mean = statistics[..., 2]
+    std = statistics[..., 3]
     timer.stop()
 
     # timer.start('Single scale + wing')
@@ -128,7 +132,7 @@ def main():
     # timer.finish()
 
     # timer.start('Find best threshold')
-    # best_single_thresh, best_single = find_best_threshold(single_img, mask, ground_truth)
+    # best_single_thresh, best_single = find_best_threshold(result, mask, ground_truth)
     # timer.finish()
 
     # timer.start('Multi scale')
@@ -144,7 +148,14 @@ def main():
 
     cv2.imshow('Image', img)
     # cv2.imshow('Window average', normalize_masked(window_avg, mask))
-    cv2.imshow('Single', normalize_masked(single_img, mask))
+    cv2.imshow('Max', normalize_masked(maxi, mask))
+    cv2.imshow('Max-window', normalize_masked(subtract(maxi, window_avg, mask), mask))
+    cv2.imshow('Min', normalize_masked(mini, mask))
+    cv2.imshow('Min-window', normalize_masked(subtract(mini, window_avg, mask), mask))
+    cv2.imshow('Mean', normalize_masked(mean, mask))
+    cv2.imshow('Mean-window', normalize_masked(subtract(mean, window_avg, mask), mask))
+    cv2.imshow('Std', normalize_masked(std, mask))
+    cv2.imshow('Std-window', normalize_masked(subtract(std, window_avg, mask), mask))
     # cv2.imshow('Single + wing', normalize_masked(255 - single_scale_wing, mask))
     # cv2.imshow('Single best', 255 - normalize_masked(best_single, mask))
     # cv2.imshow('Multi', normalize_masked(multi_scale, mask))
@@ -155,7 +166,6 @@ def main():
     # cv2.imshow('Multi', normalized_masked(multi_scale_norm, mask))
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-
 
 if __name__ == '__main__':
     main()
