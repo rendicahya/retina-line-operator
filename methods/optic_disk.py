@@ -117,7 +117,7 @@ def save_cache():
         img = 255 - img[:, :, 1]
 
         timer.start(path)
-        disk(img, mask, size)
+        cached_disk(path, img, mask, size)
         timer.stop()
 
 
@@ -134,7 +134,7 @@ def main():
     optic = normalize_masked(optic, mask)
     th, optic = cv2.threshold(optic, 75, 255, cv2.THRESH_BINARY)
     optic = cv2.erode(optic, np.ones((3, 3), np.uint8), iterations=1)
-    # img[optic == 255] = 255
+    img[optic == 255] = 255
 
     cv2.imshow('Image', img)
     cv2.imshow('Optic disk', optic)
@@ -145,4 +145,4 @@ def main():
 
 
 if __name__ == '__main__':
-    save_cache()
+    main()
