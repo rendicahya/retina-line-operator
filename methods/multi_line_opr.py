@@ -44,17 +44,18 @@ def cached_multi(path, img, mask, size):
 
 def save_cache():
     time = Timer()
+    size = 15
 
     for path, img, mask, ground_truth in DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training():
         img = 255 - img[:, :, 1]
 
         time.start(path)
-        cached_multi(path, img, mask, 15)
+        cached_multi(path, img, mask, size)
         time.stop()
 
 
 def main():
-    path, img, mask, ground_truth = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training_one(2)
+    path, img, mask, ground_truth = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training_one(1)
 
     img = 255 - img[:, :, 1]
     size = 15

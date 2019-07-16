@@ -13,7 +13,7 @@ from util.image_util import normalize_masked
 from util.timer import Timer
 
 
-def cached_basic(path, img, mask, size):
+def cached_disk(path, img, mask, size):
     cache_dir = os.path.dirname(path) + '/cache'
 
     if not os.path.exists(cache_dir):
@@ -25,7 +25,7 @@ def cached_basic(path, img, mask, size):
         binary_file = open(file_path, mode='rb')
         line_strength = pickle.load(binary_file)
     else:
-        line_strength = basic(img, mask, size)
+        line_strength = disk(img, mask, size)
         binary_file = open(file_path, mode='wb')
 
         pickle.dump(line_strength, binary_file)
@@ -35,7 +35,7 @@ def cached_basic(path, img, mask, size):
     return line_strength
 
 
-def basic(img, mask, size):
+def disk(img, mask, size):
     img = img.astype(np.int16)
     bool_mask = mask.astype(np.bool)
     lines, wings = line_factory.generate_lines(size)
@@ -44,7 +44,7 @@ def basic(img, mask, size):
     cpu_count = psutil.cpu_count()
 
     processes = [
-        mp.Process(target=basic_worker, args=(img, bool_mask, lines, wings, queue, cpu_count, cpu_id))
+        mp.Process(target=disk_worker, args=(img, bool_mask, lines, wings, queue, cpu_count, cpu_id))
         for cpu_id in range(cpu_count)]
 
     for p in processes:
@@ -64,7 +64,7 @@ def basic(img, mask, size):
     return result
 
 
-def basic_worker(img, bool_mask, lines, wings, queue, cpu_count, cpu_id):
+def disk_worker(img, bool_mask, lines, wings, queue, cpu_count, cpu_id):
     h, w = img.shape[:2]
     slice_height = h // cpu_count
     y_start = cpu_id * slice_height
@@ -109,32 +109,32 @@ def basic_worker(img, bool_mask, lines, wings, queue, cpu_count, cpu_id):
     queue.put((cpu_id, line_str))
 
 
-def cache_all():
+def save_cache():
     timer = Timer()
+    size = 15
 
-    for path, img, mask, ground_truth in DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing():
+    for path, img, mask, ground_truth in DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training():
         img = 255 - img[:, :, 1]
 
-        for size in range(15, 26, 2):
-            timer.start('%s/%d' % (path, size))
-            basic(img, mask, size)
-            timer.stop()
+        timer.start(path)
+        disk(img, mask, size)
+        timer.stop()
 
 
 def main():
-    path, img, mask, ground_truth = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training_one(2)
+    path, img, mask, ground_truth = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training_one(1)
     img = 255 - img[:, :, 1]
     size = 15
     timer = Timer()
 
     timer.start('Optic disk')
-    optic = cached_basic(path, img, mask, size)
+    optic = cached_disk(path, img, mask, size)
     timer.stop()
 
     optic = normalize_masked(optic, mask)
     th, optic = cv2.threshold(optic, 75, 255, cv2.THRESH_BINARY)
     optic = cv2.erode(optic, np.ones((3, 3), np.uint8), iterations=1)
-    img[optic == 255] = 255
+    # img[optic == 255] = 255
 
     cv2.imshow('Image', img)
     cv2.imshow('Optic disk', optic)
@@ -145,4 +145,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    save_cache()

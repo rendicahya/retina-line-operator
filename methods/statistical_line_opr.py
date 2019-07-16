@@ -102,14 +102,14 @@ def statistics_worker(img, bool_mask, lines, queue, cpu_count, cpu_id):
 
 def save_cache():
     time = Timer()
+    size = 15
 
     for path, img, mask, ground_truth in DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training():
         img = 255 - img[:, :, 1]
 
-        for size in range(1, 16, 2):
-            time.start('%s [%d]' % (path, size))
-            cached_statistics(path, img, mask, size)
-            time.stop()
+        time.start(path)
+        cached_statistics(path, img, mask, size)
+        time.stop()
 
 
 def main():
