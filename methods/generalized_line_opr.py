@@ -35,7 +35,7 @@ def cached_line(path, img, mask, size):
 
 
 def line(img, mask, size):
-    img = img.astype(np.int16)
+    # img = img.astype(np.int16)
     bool_mask = mask.astype(np.bool)
     lines, wings = line_factory.generate_lines(size)
 
@@ -63,7 +63,7 @@ def line_worker(img, bool_mask, lines, queue, cpu_count, cpu_id):
     height, width = img.shape[:2]
     slice_height = height // cpu_count
     y_start = cpu_id * slice_height
-    line_str = np.zeros((slice_height, width, 4), np.float64)
+    stat = np.zeros((slice_height, width, 4), np.float64)
     temp_line_str = np.empty(len(lines), np.float64)
 
     for Y in range(y_start, (cpu_id + 1) * slice_height):
@@ -87,12 +87,12 @@ def line_worker(img, bool_mask, lines, queue, cpu_count, cpu_id):
 
                 temp_line_str[angle] = pixel_sum / pixel_count
 
-            line_str[Y - y_start, X] = [np.max(temp_line_str),
-                                        np.min(temp_line_str),
-                                        np.average(temp_line_str),
-                                        np.std(temp_line_str)]
+            stat[Y - y_start, X] = [np.max(temp_line_str),
+                                    np.min(temp_line_str),
+                                    np.mean(temp_line_str),
+                                    np.std(temp_line_str)]
 
-    queue.put((cpu_id, line_str))
+    queue.put((cpu_id, stat))
 
 
 def cache_all():
@@ -150,7 +150,8 @@ def main():
     # cv2.imshow('Window average', normalize_masked(window_avg, mask))
     cv2.imshow('Max', normalize_masked(maxi, mask))
     cv2.imshow('Max-window', normalize_masked(subtract(maxi, window_avg, mask), mask))
-    cv2.imshow('Max-window-thresh', normalize_masked(find_best_thresh(subtract(maxi, window_avg, mask), ground, mask)[1], mask))
+    cv2.imshow('Max-window-thresh',
+               normalize_masked(find_best_thresh(subtract(maxi, window_avg, mask), ground, mask)[1], mask))
     cv2.imshow('Min', normalize_masked(mini, mask))
     cv2.imshow('Min-window', normalize_masked(subtract(mini, window_avg, mask), mask))
     cv2.imshow('Mean', normalize_masked(mean, mask))
@@ -167,6 +168,7 @@ def main():
     # cv2.imshow('Multi', normalized_masked(multi_scale_norm, mask))
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+
 
 if __name__ == '__main__':
     main()

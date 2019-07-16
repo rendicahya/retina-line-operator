@@ -35,7 +35,7 @@ def cached_line(path, img, mask, size):
 
 
 def line(img, mask, size):
-    img = img.astype(np.int16)
+    # img = img.astype(np.int16)
     bool_mask = mask.astype(np.bool)
     lines, wings = line_factory.generate_lines(size)
 

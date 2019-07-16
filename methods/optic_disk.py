@@ -19,7 +19,7 @@ def cached_basic(path, img, mask, size):
     if not os.path.exists(cache_dir):
         os.mkdir(cache_dir)
 
-    file_path = '%s/optdisk-%s-%d.bin' % (cache_dir, os.path.basename(path), size)
+    file_path = '%s/disk-%s-%d.bin' % (cache_dir, os.path.basename(path), size)
 
     if os.path.exists(file_path):
         binary_file = open(file_path, mode='rb')
@@ -51,7 +51,7 @@ def basic(img, mask, size):
         p.start()
 
     slices = [queue.get() for _ in processes]
-    slices = sorted(slices, key=lambda slice: slice[0])
+    slices = sorted(slices, key=lambda s: s[0])
     slices = [piece[1] for piece in slices]
 
     for p in processes:
@@ -68,7 +68,7 @@ def basic_worker(img, bool_mask, lines, wings, queue, cpu_count, cpu_id):
     h, w = img.shape[:2]
     slice_height = h // cpu_count
     y_start = cpu_id * slice_height
-    linestr = np.zeros((slice_height, w), np.int16)
+    line_str = np.zeros((slice_height, w), np.int16)
 
     for Y in range(y_start, (cpu_id + 1) * slice_height):
         for X in range(w):
@@ -104,9 +104,9 @@ def basic_worker(img, bool_mask, lines, wings, queue, cpu_count, cpu_id):
             wing = wings[max_angle]
             p = Y + wing[0][1], X + wing[0][0]
             q = Y + wing[1][1], X + wing[1][0]
-            linestr[Y - y_start, X] = abs(img[p] - img[q])
+            line_str[Y - y_start, X] = abs(img[p] - img[q])
 
-    queue.put((cpu_id, linestr))
+    queue.put((cpu_id, line_str))
 
 
 def cache_all():

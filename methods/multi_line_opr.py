@@ -12,9 +12,9 @@ from util.timer import Timer
 
 
 def cached_multi_norm(path, img, mask, size):
-    linestr = cached_multi(path, img, mask, size)
+    line_str = cached_multi(path, img, mask, size)
 
-    return normalize_masked(linestr, mask)
+    return normalize_masked(line_str, mask)
 
 
 def cached_multi(path, img, mask, size):
@@ -88,4 +88,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    save_cache()

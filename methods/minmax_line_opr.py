@@ -40,8 +40,8 @@ def cached_basic(path, image, mask, size):
     return line_str
 
 
-def basic(image, mask, size):
-    image = image.astype(np.int16)
+def basic(img, mask, size):
+    # img = img.astype(np.int16)
     bool_mask = mask.astype(np.bool)
     lines, wings = line_factory.generate_lines(size)
 
@@ -49,7 +49,7 @@ def basic(image, mask, size):
     cpu_count = psutil.cpu_count()
 
     processes = [
-        mp.Process(target=basic_worker, args=(image, bool_mask, lines, queue, cpu_count, cpu_id))
+        mp.Process(target=basic_worker, args=(img, bool_mask, lines, queue, cpu_count, cpu_id))
         for cpu_id in range(cpu_count)]
 
     for p in processes:
@@ -69,7 +69,7 @@ def basic_worker(img, bool_mask, lines, queue, cpu_count, cpu_id):
     height, width = img.shape[:2]
     slice_height = height // cpu_count
     y_start = cpu_id * slice_height
-    minmax = np.zeros((slice_height, width), np.int16)
+    minmax = np.zeros((slice_height, width), np.float64)
 
     for Y in range(y_start, (cpu_id + 1) * slice_height):
         for X in range(width):
