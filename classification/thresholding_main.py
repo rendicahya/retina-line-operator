@@ -61,7 +61,7 @@ def find_best_acc_avg_each(op, data):
 def main():
     data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
 
-    find_best_acc_avg_each(cached_single_norm, data)
+    find_best_acc_avg_all(cached_multi_norm, data)
 
     # cv2.imshow('Image', linestr)
     # cv2.waitKey(0)

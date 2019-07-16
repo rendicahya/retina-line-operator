@@ -1,0 +1,15 @@
+Single/training
+Best threshold: 64
+Best accuracy: 0.916151059184999
+
+Multi/training
+Best threshold: 119
+Best accuracy: 0.9053773947330853
+
+Single/testing
+Best threshold: 65
+Best accuracy: 0.9164468404771909
+
+Multi/testing
+Best threshold: 117
+Best accuracy: 0.9029464620716162
