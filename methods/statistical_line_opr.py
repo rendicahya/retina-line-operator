@@ -2,23 +2,22 @@ import multiprocessing as mp
 import os.path
 import pickle
 
-import numpy as np
 import psutil
 
 from dataset.DriveDatasetLoader import DriveDatasetLoader
-from methods import window_average, line_factory
-from methods.single_line_opr import subtract
+from methods import window_average
+from methods.line_factory import generate_lines
 from util.image_util import *
 from util.timer import Timer
 
 
-def cached_line(path, img, mask, size):
+def cached_statistics(path, img, mask, size):
     cache_dir = os.path.dirname(path) + '/cache'
 
     if not os.path.exists(cache_dir):
         os.mkdir(cache_dir)
 
-    file_path = '%s/generalized-%s-%d.bin' % (cache_dir, os.path.basename(path), size)
+    file_path = '%s/statistical-%s-%d.bin' % (cache_dir, os.path.basename(path), size)
 
     if os.path.exists(file_path):
         binary_file = open(file_path, mode='rb')
@@ -35,9 +34,8 @@ def cached_line(path, img, mask, size):
 
 
 def line(img, mask, size):
-    # img = img.astype(np.int16)
     bool_mask = mask.astype(np.bool)
-    lines, wings = line_factory.generate_lines(size)
+    lines, wings = generate_lines(size)
 
     queue = mp.Queue()
     cpu_count = psutil.cpu_count()
@@ -56,7 +54,12 @@ def line(img, mask, size):
     for p in processes:
         p.join()
 
-    return np.vstack(slices)
+    stack = np.vstack(slices)
+
+    return {'max': stack[..., 0],
+            'min': stack[..., 1],
+            'mean': stack[..., 2],
+            'std': stack[..., 3]}
 
 
 def line_worker(img, bool_mask, lines, queue, cpu_count, cpu_id):
@@ -95,7 +98,7 @@ def line_worker(img, bool_mask, lines, queue, cpu_count, cpu_id):
     queue.put((cpu_id, stat))
 
 
-def cache_all():
+def save_cache():
     time = Timer()
 
     for path, img, mask, ground_truth in DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training():
@@ -120,11 +123,11 @@ def main():
     timer.stop()
 
     timer.start('Single')
-    statistics = cached_line(path, img, mask, size)
-    maxi = statistics[..., 0]
-    mini = statistics[..., 1]
-    mean = statistics[..., 2]
-    std = statistics[..., 3]
+    statistics = cached_statistics(path, img, mask, size)
+    maxi = statistics['max']
+    mini = statistics['min']
+    mean = statistics['mean']
+    std = statistics['std']
     timer.stop()
 
     # timer.start('Single scale + wing')
@@ -149,15 +152,15 @@ def main():
     cv2.imshow('Image', img)
     # cv2.imshow('Window average', normalize_masked(window_avg, mask))
     cv2.imshow('Max', normalize_masked(maxi, mask))
-    cv2.imshow('Max-window', normalize_masked(subtract(maxi, window_avg, mask), mask))
+    cv2.imshow('Max-window', normalize_masked(subtract_masked(maxi, window_avg, mask), mask))
     cv2.imshow('Max-window-thresh',
-               normalize_masked(find_best_thresh(subtract(maxi, window_avg, mask), ground, mask)[1], mask))
+               normalize_masked(find_best_thresh(subtract_masked(maxi, window_avg, mask), ground, mask)[1], mask))
     cv2.imshow('Min', normalize_masked(mini, mask))
-    cv2.imshow('Min-window', normalize_masked(subtract(mini, window_avg, mask), mask))
+    cv2.imshow('Min-window', normalize_masked(subtract_masked(mini, window_avg, mask), mask))
     cv2.imshow('Mean', normalize_masked(mean, mask))
-    cv2.imshow('Mean-window', normalize_masked(subtract(mean, window_avg, mask), mask))
+    cv2.imshow('Mean-window', normalize_masked(subtract_masked(mean, window_avg, mask), mask))
     cv2.imshow('Std', normalize_masked(std, mask))
-    cv2.imshow('Std-window', normalize_masked(subtract(std, window_avg, mask), mask))
+    cv2.imshow('Std-window', normalize_masked(subtract_masked(std, window_avg, mask), mask))
     # cv2.imshow('Single + wing', normalize_masked(255 - single_scale_wing, mask))
     # cv2.imshow('Single best', 255 - normalize_masked(best_single, mask))
     # cv2.imshow('Multi', normalize_masked(multi_scale, mask))

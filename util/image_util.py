@@ -1,4 +1,5 @@
 import cv2
+import numpy as np
 
 from util.data_util import accuracy
 
@@ -28,3 +29,7 @@ def find_best_thresh(img, ground, mask):
             best_image = bin
 
     return best_thresh, best_image, best_acc
+
+
+def subtract_masked(line, window, mask):
+    return cv2.subtract(line.astype(np.float64), window, None, mask)

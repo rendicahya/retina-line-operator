@@ -80,11 +80,11 @@ def integral(img, mask, window_size):
     window_avg = np.zeros((height, width), np.float64)
 
     img = cv2.bitwise_and(img, img, mask=mask)
-    img_integral = np.cumsum(np.cumsum(img, 0), 1).astype(np.uint32)
+    img_integral = np.cumsum(np.cumsum(img, 0), 1).astype(np.int32)
 
     mask[mask > 0] = 1
     bool_mask = mask.astype(np.bool)
-    mask_integral = np.cumsum(np.cumsum(mask, 0), 1).astype(np.uint32)
+    mask_integral = np.cumsum(np.cumsum(mask, 0), 1).astype(np.int32)
 
     for Y in range(height):
         for X in range(width):
@@ -124,7 +124,7 @@ def main():
 
     # timer.start('Basic')
     # window_avg = basic(image, mask, size)
-    # timer.finish()
+    # timer.stop()
 
     timer.start('Integral')
     window_avg = integral(image, mask, size)

@@ -1,28 +1,17 @@
-import multiprocessing as mp
-import os.path
-import pickle
-import sys
-
 import cv2
-import numpy as np
-import psutil
 
 from dataset.DriveDatasetLoader import DriveDatasetLoader
-from methods.line_factory import generate_lines
+from methods.statistical_line_opr import cached_statistics
 from methods.window_average import cached_integral
-from util.image_util import normalize_masked
+from util.image_util import normalize_masked, subtract_masked
 from util.timer import Timer
-
-
-def subtract(line, window, mask):
-    return cv2.subtract(line.astype(np.float64), window, None, mask)
 
 
 def cached_single(path, img, mask, size):
     window_avg = cached_integral(path, img, mask, size)
-    line_img = cached_line(path, img, mask, size)
+    line_img = cached_statistics(path, img, mask, size)['max']
 
-    return subtract(line_img, window_avg, mask)
+    return subtract_masked(line_img, window_avg, mask)
 
 
 def cached_single_norm(path, img, mask, size):
@@ -31,6 +20,7 @@ def cached_single_norm(path, img, mask, size):
     return normalize_masked(line_str, mask)
 
 
+'''
 def cached_line(path, img, mask, size):
     cache_dir = os.path.dirname(path) + '/cache'
 
@@ -75,8 +65,8 @@ def line(img, mask, size):
         p.join()
 
     return np.vstack(slices)
-
-
+    
+    
 def line_worker(img, bool_mask, lines, queue, cpu_count, cpu_id):
     height, width = img.shape[:2]
     slice_height = height // cpu_count
@@ -129,6 +119,7 @@ def save_cache():
             time.start(f'Line: {path} [{size}]')
             cached_line(path, img, mask, size)
             time.stop()
+'''
 
 
 def main():
@@ -143,8 +134,8 @@ def main():
     timer.stop()
 
     timer.start('Single')
-    line_str = cached_line(path, img, mask, size)
-    line_str = subtract(line_str, window, mask)
+    line_str = cached_statistics(path, img, mask, size)['max']
+    line_str = subtract_masked(line_str, window, mask)
     line_str = normalize_masked(line_str, mask)
     # bin = cv2.threshold(line_str, 65, 255, cv2.THRESH_BINARY)[1]
     timer.stop()

@@ -2,12 +2,10 @@ import multiprocessing as mp
 import os.path
 import pickle
 
-import numpy as np
 import psutil
 
 from dataset.DriveDatasetLoader import DriveDatasetLoader
 from methods import window_average, line_factory
-from methods.single_line_opr import subtract
 from util.image_util import *
 from util.timer import Timer
 
@@ -120,7 +118,7 @@ def main():
 
     timer.start('Single')
     line_img = line(img, mask, size)
-    single_img = subtract(line_img, window_avg, mask)
+    single_img = subtract_masked(line_img, window_avg, mask)
     timer.stop()
 
     # timer.start('Single scale + wing')

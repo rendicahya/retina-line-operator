@@ -5,9 +5,9 @@ import cv2
 import numpy as np
 
 from dataset.DriveDatasetLoader import DriveDatasetLoader
-from methods.single_line_opr import subtract, cached_line
+from methods.single_line_opr import cached_line
 from methods.window_average import cached_integral
-from util.image_util import normalize_masked
+from util.image_util import normalize_masked, subtract_masked
 from util.timer import Timer
 
 
@@ -41,7 +41,7 @@ def cached_multi(path, img, mask, size):
 
 def multi(path, img, mask, size):
     window = cached_integral(path, img, mask, size)
-    line_str = [subtract(cached_line(path, img, mask, size), window, mask)
+    line_str = [subtract_masked(cached_line(path, img, mask, size), window, mask)
                 for size in range(1, size + 1, 2)]
 
     return np.average(np.stack(line_str), axis=0)
@@ -50,7 +50,7 @@ def multi(path, img, mask, size):
 def save_cache():
     time = Timer()
 
-    for path, img, mask, ground_truth in DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing():
+    for path, img, mask, ground_truth in DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training():
         img = 255 - img[:, :, 1]
 
         time.start(path)
