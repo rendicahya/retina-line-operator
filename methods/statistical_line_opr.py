@@ -2,12 +2,14 @@ import multiprocessing as mp
 import os.path
 import pickle
 
+import cv2
+import numpy as np
 import psutil
 
 from dataset.DriveDatasetLoader import DriveDatasetLoader
 from methods import window_average
 from methods.line_factory import generate_lines
-from util.image_util import *
+from util.image_util import subtract_masked, normalize_masked, find_best_thresh
 from util.timer import Timer
 
 
@@ -23,7 +25,7 @@ def cached_statistics(path, img, mask, size):
         binary_file = open(file_path, mode='rb')
         line_strength = pickle.load(binary_file)
     else:
-        line_strength = line(img, mask, size)
+        line_strength = statistics(img, mask, size)
         binary_file = open(file_path, mode='wb')
 
         pickle.dump(line_strength, binary_file)
@@ -33,7 +35,7 @@ def cached_statistics(path, img, mask, size):
     return line_strength
 
 
-def line(img, mask, size):
+def statistics(img, mask, size):
     bool_mask = mask.astype(np.bool)
     lines, wings = generate_lines(size)
 
@@ -41,7 +43,7 @@ def line(img, mask, size):
     cpu_count = psutil.cpu_count()
 
     processes = [
-        mp.Process(target=line_worker, args=(img, bool_mask, lines, queue, cpu_count, cpu_id))
+        mp.Process(target=statistics_worker, args=(img, bool_mask, lines, queue, cpu_count, cpu_id))
         for cpu_id in range(cpu_count)]
 
     for p in processes:
@@ -62,7 +64,7 @@ def line(img, mask, size):
             'std': stack[..., 3]}
 
 
-def line_worker(img, bool_mask, lines, queue, cpu_count, cpu_id):
+def statistics_worker(img, bool_mask, lines, queue, cpu_count, cpu_id):
     height, width = img.shape[:2]
     slice_height = height // cpu_count
     y_start = cpu_id * slice_height
@@ -106,8 +108,7 @@ def save_cache():
 
         for size in range(1, 16, 2):
             time.start('%s [%d]' % (path, size))
-            window_avg = window_average.cached_integral(path, img, mask, size)
-            # cached_line(path, img, mask, size)
+            cached_statistics(path, img, mask, size)
             time.stop()
 
 

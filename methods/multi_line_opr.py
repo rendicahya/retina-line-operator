@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 
 from dataset.DriveDatasetLoader import DriveDatasetLoader
-from methods.single_line_opr import cached_line
+from methods.statistical_line_opr import cached_statistics
 from methods.window_average import cached_integral
 from util.image_util import normalize_masked, subtract_masked
 from util.timer import Timer
@@ -27,24 +27,19 @@ def cached_multi(path, img, mask, size):
 
     if os.path.exists(file_path):
         binary_file = open(file_path, mode='rb')
-        line_strength = pickle.load(binary_file)
+        line_str = pickle.load(binary_file)
     else:
-        line_strength = multi(path, img, mask, size)
+        window = cached_integral(path, img, mask, size)
+        line_str = [subtract_masked(cached_statistics(path, img, mask, size)['max'], window, mask)
+                    for size in range(1, size + 1, 2)]
+        line_str = np.average(np.stack(line_str), axis=0)
         binary_file = open(file_path, mode='wb')
 
-        pickle.dump(line_strength, binary_file)
+        pickle.dump(line_str, binary_file)
 
     binary_file.close()
 
-    return line_strength
-
-
-def multi(path, img, mask, size):
-    window = cached_integral(path, img, mask, size)
-    line_str = [subtract_masked(cached_line(path, img, mask, size), window, mask)
-                for size in range(1, size + 1, 2)]
-
-    return np.average(np.stack(line_str), axis=0)
+    return line_str
 
 
 def save_cache():
@@ -59,7 +54,7 @@ def save_cache():
 
 
 def main():
-    path, img, mask, ground_truth = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training_one(1)
+    path, img, mask, ground_truth = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training_one(2)
 
     img = 255 - img[:, :, 1]
     size = 15
