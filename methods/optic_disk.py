@@ -141,7 +141,7 @@ def main():
     cv2.imshow('Ground truth', ground_truth)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-    # cv2.imwrite('C:/Users/Rendicahya/Desktop/optic.jpg', disk)
+    cv2.imwrite(r'C:\Users\Randy Cahya Wihandik\Desktop/optic.png', img)
 
 
 if __name__ == '__main__':

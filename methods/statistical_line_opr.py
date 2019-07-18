@@ -132,12 +132,13 @@ def main():
     min_window = 255 - cv2.threshold(min_window, 138, 255, cv2.THRESH_BINARY)[1]
     min_window[mask == 0] = 0
     img[min_window == 255] = 255
+    img[mask == 0] = 255
 
     cv2.imshow('Image', img)
     cv2.imshow('Min-window', min_window)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-    cv2.imwrite(r'C:\Users\Randy Cahya Wihandik\Desktop\min-window.jpg', img)
+    cv2.imwrite(r'C:\Users\Randy Cahya Wihandik\Desktop\min-minus-window.png', img)
 
 
 if __name__ == '__main__':
