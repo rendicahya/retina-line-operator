@@ -124,54 +124,20 @@ def main():
     timer.stop()
 
     timer.start('Single')
-    statistics = cached_statistics(path, img, mask, size)
-    maxi = statistics['max']
-    mini = statistics['min']
-    mean = statistics['mean']
-    std = statistics['std']
+    stat = cached_statistics(path, img, mask, size)
+    mini = stat['min']
     timer.stop()
 
-    # timer.start('Single scale + wing')
-    # single_scale_wing = single(img, mask, window_avg, size)
-    # timer.finish()
-
-    # timer.start('Find best threshold')
-    # best_single_thresh, best_single = find_best_threshold(result, mask, ground)
-    # timer.finish()
-
-    # timer.start('Multi scale')
-    # multi_scale = cached_multi(path, img, mask, size)
-    # timer.finish()
-
-    # timer.start('Find best multi scale')
-    # best_multi_thresh, best_multi = find_best_threshold(multi_scale, mask, ground)
-    # timer.finish()
-
-    # green('Best single scale threshold: %d' % best_single_thresh)
-    # green('Best multi scale threshold: %d' % best_multi_thresh)
+    min_window = normalize_masked(subtract_masked(mini, window_avg, mask), mask)
+    min_window = 255 - cv2.threshold(min_window, 138, 255, cv2.THRESH_BINARY)[1]
+    min_window[mask == 0] = 0
+    img[min_window == 255] = 255
 
     cv2.imshow('Image', img)
-    # cv2.imshow('Window average', normalize_masked(window_avg, mask))
-    cv2.imshow('Max', normalize_masked(maxi, mask))
-    cv2.imshow('Max-window', normalize_masked(subtract_masked(maxi, window_avg, mask), mask))
-    cv2.imshow('Max-window-thresh',
-               normalize_masked(find_best_thresh(subtract_masked(maxi, window_avg, mask), ground, mask)[1], mask))
-    cv2.imshow('Min', normalize_masked(mini, mask))
-    cv2.imshow('Min-window', normalize_masked(subtract_masked(mini, window_avg, mask), mask))
-    cv2.imshow('Mean', normalize_masked(mean, mask))
-    cv2.imshow('Mean-window', normalize_masked(subtract_masked(mean, window_avg, mask), mask))
-    cv2.imshow('Std', normalize_masked(std, mask))
-    cv2.imshow('Std-window', normalize_masked(subtract_masked(std, window_avg, mask), mask))
-    # cv2.imshow('Single + wing', normalize_masked(255 - single_scale_wing, mask))
-    # cv2.imshow('Single best', 255 - normalize_masked(best_single, mask))
-    # cv2.imshow('Multi', normalize_masked(multi_scale, mask))
-    # cv2.imshow('Best multi', 255 - normalize_masked(best_multi, mask))
-    # cv2.imshow('Multi histeq', cv2.equalizeHist(multi_scale))
-    # cv2.imshow('Ground truth', ground)
-    # cv2.imshow('Best binary', binary)
-    # cv2.imshow('Multi', normalized_masked(multi_scale_norm, mask))
+    cv2.imshow('Min-window', min_window)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+    cv2.imwrite(r'C:\Users\Randy Cahya Wihandik\Desktop\min-window.jpg', img)
 
 
 if __name__ == '__main__':

@@ -113,7 +113,7 @@ def save_cache():
     timer = Timer()
     size = 15
 
-    for path, img, mask, ground_truth in DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training():
+    for path, img, mask, ground_truth in DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing():
         img = 255 - img[:, :, 1]
 
         timer.start(path)
@@ -128,20 +128,20 @@ def main():
     timer = Timer()
 
     timer.start('Optic disk')
-    optic = cached_disk(path, img, mask, size)
+    disk = cached_disk(path, img, mask, size)
     timer.stop()
 
-    optic = normalize_masked(optic, mask)
-    th, optic = cv2.threshold(optic, 75, 255, cv2.THRESH_BINARY)
-    optic = cv2.erode(optic, np.ones((3, 3), np.uint8), iterations=1)
-    img[optic == 255] = 255
+    disk = normalize_masked(disk, mask)
+    thresh, disk = cv2.threshold(disk, 75, 255, cv2.THRESH_BINARY)
+    disk = cv2.erode(disk, np.ones((3, 3), np.uint8), iterations=1)
+    img[disk == 255] = 255
 
     cv2.imshow('Image', img)
-    cv2.imshow('Optic disk', optic)
+    cv2.imshow('Optic disk', disk)
     cv2.imshow('Ground truth', ground_truth)
-    cv2.imwrite('C:/Users/Rendicahya/Desktop/optic.jpg', optic)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+    # cv2.imwrite('C:/Users/Rendicahya/Desktop/optic.jpg', disk)
 
 
 if __name__ == '__main__':
