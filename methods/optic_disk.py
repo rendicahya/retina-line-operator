@@ -13,6 +13,12 @@ from util.image_util import normalize_masked
 from util.timer import Timer
 
 
+def cached_disk_norm(path, img, mask, size):
+    disk = cached_disk(path, img, mask, size)
+
+    return normalize_masked(disk, mask)
+
+
 def cached_disk(path, img, mask, size):
     cache_dir = os.path.dirname(path) + '/cache'
 
@@ -141,7 +147,7 @@ def main():
     cv2.imshow('Ground truth', ground_truth)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-    cv2.imwrite(r'C:\Users\Randy Cahya Wihandik\Desktop/optic.png', img)
+    # cv2.imwrite(r'C:\Users\Randy Cahya Wihandik\Desktop\optic.png', img)
 
 
 if __name__ == '__main__':

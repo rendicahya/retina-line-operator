@@ -23,7 +23,6 @@ def cached_single_norm(path, img, mask, size):
 
 def main():
     path, img, mask, ground = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training_one(1)
-
     img = 255 - img[:, :, 1]
     size = 15
     timer = Timer()
@@ -39,8 +38,10 @@ def main():
     # timer.finish()
 
     timer.start('Find best threshold')
-    single_thresh = find_best_thresh(line_str, ground, mask)[1]
+    thresh, single_thresh, acc = find_best_thresh(line_str, ground, mask)
     timer.stop()
+
+    print(thresh)
 
     # timer.start('Multi scale')
     # multi_scale = cached_multi(path, img, mask, size)
