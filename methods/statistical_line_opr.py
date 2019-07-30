@@ -7,9 +7,9 @@ import numpy as np
 import psutil
 
 from dataset.DriveDatasetLoader import DriveDatasetLoader
-from methods import window_average
 from methods.line_factory import generate_lines
-from util.image_util import subtract_masked, normalize_masked, find_best_thresh
+from methods.window_average import cached_integral
+from util.image_util import subtract_masked, normalize_masked
 from util.timer import Timer
 
 
@@ -117,18 +117,10 @@ def main():
 
     img = 255 - img[:, :, 1]
     size = 15
-    timer = Timer()
 
-    timer.start('Window average')
-    window_avg = window_average.cached_integral(path, img, mask, size)
-    timer.stop()
-
-    timer.start('Single')
+    window_avg = cached_integral(path, img, mask, size)
     stat = cached_statistics(path, img, mask, size)
-    mini = stat['min']
-    timer.stop()
-
-    min_window = normalize_masked(subtract_masked(mini, window_avg, mask), mask)
+    min_window = normalize_masked(subtract_masked(stat['min'], window_avg, mask), mask)
     min_window = 255 - cv2.threshold(min_window, 138, 255, cv2.THRESH_BINARY)[1]
     min_window[mask == 0] = 0
     img[min_window == 255] = 255
