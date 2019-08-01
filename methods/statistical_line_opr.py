@@ -11,7 +11,6 @@ from methods.line_factory import generate_lines
 from methods.window_average import cached_integral
 from util.image_util import subtract_masked, normalize_masked
 from util.timer import Timer
-from methods.single_line_opr import cached_single_norm
 
 
 def cached_statistics(path, img, mask, size):
@@ -121,7 +120,6 @@ def main():
 
     window_avg = cached_integral(path, img, mask, size)
     stat = cached_statistics(path, img, mask, size)
-    max = cached_single_norm(path, img, mask, size)
     min_window = normalize_masked(subtract_masked(stat['min'], window_avg, mask), mask)
     min_window = 255 - cv2.threshold(min_window, 138, 255, cv2.THRESH_BINARY)[1]
     min_window[mask == 0] = 0
@@ -129,7 +127,6 @@ def main():
     img[mask == 0] = 255
 
     cv2.imshow('Image', img)
-    cv2.imshow('Max', max)
     cv2.imshow('Min-window', min_window)
     cv2.imshow('Ground', ground)
     cv2.waitKey(0)

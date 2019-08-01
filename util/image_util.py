@@ -13,22 +13,22 @@ def normalize_masked(img, mask):
 
 
 def find_best_thresh(img, ground, mask):
-    best_acc = 0
-    best_thresh = 0
-    best_img = None
+    thresh_list = []
+    acc_list = []
+    img_list = []
 
     for t in range(1, 255):
         thresh, bin = cv2.threshold(img, t, 255, cv2.THRESH_BINARY)
         bin_fov = bin[mask == 255]
         ground_fov = ground[mask == 255]
-        acc = accuracy(bin_fov, ground_fov)
 
-        if acc > best_acc:
-            best_acc = acc
-            best_thresh = thresh
-            best_img = bin
+        thresh_list.append(thresh)
+        acc_list.append(accuracy(bin_fov, ground_fov))
+        img_list.append(bin)
 
-    return best_thresh, best_img, best_acc
+    best = np.argmax(acc_list)
+
+    return thresh_list[best], img_list[best], acc_list[best]
 
 
 def subtract_masked(line, window, mask):

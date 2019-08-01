@@ -69,13 +69,9 @@ def main():
     # best_multi_thresh, best_multi = find_best_threshold(multi_scale, mask, ground_truth)
     # timer.finish()
 
-    # green('Best single scale threshold: %d' % best_single_thresh)
-    # green('Best multi scale threshold: %d' % best_multi_thresh)
-
     cv2.imshow('Image', img)
     cv2.imshow('Multi', multi_scale)
     # cv2.imshow('Best multi', 255 - normalize_masked(best_multi, mask))
-    # cv2.imshow('Multi histeq', cv2.equalizeHist(multi_scale))
     # cv2.imshow('Ground truth', ground_truth)
     # cv2.imshow('Best binary', binary)
     # cv2.imshow('Multi', normalized_masked(multi_scale_norm, mask))

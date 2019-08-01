@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-
+from sklearn.metrics import roc_curve, auc
 from util.numpy_util import to_numpy_array
 
 
