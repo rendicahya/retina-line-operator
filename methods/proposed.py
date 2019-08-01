@@ -1,5 +1,3 @@
-import cv2
-
 from methods.statistical_line_opr import cached_statistics
 from methods.window_average import cached_integral
 from util.image_util import subtract_masked, normalize_masked

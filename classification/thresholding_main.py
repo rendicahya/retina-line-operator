@@ -4,11 +4,12 @@ import numpy as np
 from dataset.DriveDatasetLoader import DriveDatasetLoader
 from methods.multi_line_opr import cached_multi_norm
 from methods.optic_disk import cached_disk_norm
+from methods.proposed import proposed_norm
 from methods.single_line_opr import cached_single_norm
 from util.data_util import accuracy
+from util.image_util import find_best_thresh
 from util.print_color import *
 from util.timer import Timer
-from methods.proposed import proposed_norm
 
 
 def get_accuracy(op, data, thresh):
@@ -28,7 +29,7 @@ def get_accuracy(op, data, thresh):
     return np.mean(acc_list)
 
 
-def find_best_acc(op, data):
+def find_best_acc_train_data(op, data):
     best_acc = 0
     best_thresh = 0
     size = 15
@@ -163,7 +164,6 @@ def get_accuracy_proposed(op, data, thresh, proposed_thresh):
     return np.mean(acc_list)
 
 
-'''
 def find_best_acc_avg_each(op, data):
     acc_list = []
     size = 15
@@ -177,18 +177,17 @@ def find_best_acc_avg_each(op, data):
 
     print(np.mean(acc_list))
     print(np.max(acc_list))
-'''
 
 
 def test_line():
     train_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
     test_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
     op = cached_single_norm
-    op = cached_multi_norm
+    # op = cached_multi_norm
     timer = Timer()
 
     timer.start('Train')
-    thresh, train_acc = find_best_acc(op, train_data)
+    thresh, train_acc = find_best_acc_train_data(op, train_data)
     timer.stop()
 
     timer.start('Test')

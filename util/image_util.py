@@ -15,7 +15,7 @@ def normalize_masked(img, mask):
 def find_best_thresh(img, ground, mask):
     best_acc = 0
     best_thresh = 0
-    best_image = None
+    best_img = None
 
     for t in range(1, 255):
         thresh, bin = cv2.threshold(img, t, 255, cv2.THRESH_BINARY)
@@ -26,9 +26,9 @@ def find_best_thresh(img, ground, mask):
         if acc > best_acc:
             best_acc = acc
             best_thresh = thresh
-            best_image = bin
+            best_img = bin
 
-    return best_thresh, best_image, best_acc
+    return best_thresh, best_img, best_acc
 
 
 def subtract_masked(line, window, mask):

@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 
 from methods.multi_line_opr import cached_multi
-from methods.single_line_opr import cached_single
 from util.data_util import normalize
 
 
@@ -10,19 +9,23 @@ class FeatureExtractor:
     selected_fg_idx = None
     selected_bg_idx = None
 
-    def __init__(self, image, mask, path, size, ground_truth=None, n_features=None):
+    def __init__(self, image, mask, path, size, ground=None, n_features=None):
         self.image = image
         self.mask = mask
         self.path = path
         self.size = size
 
-        if ground_truth is not None and n_features is not None:
-            all_fg_idx = np.argwhere(ground_truth == 255)
-            rand_fg_idx = np.random.choice(all_fg_idx.shape[0], n_features, False)
+        if ground is not None and n_features is not None:
+            np.random.seed(0)
+
+            all_fg_idx = np.argwhere(ground == 255)
+            rand_fg_idx = np.random.choice(all_fg_idx.shape[0], n_features // 2, False)
             selected_fg_idx = all_fg_idx[rand_fg_idx]
 
-            all_bg_idx = np.argwhere(ground_truth == 0)
-            rand_bg_idx = np.random.choice(all_bg_idx.shape[0], n_features, False)
+            np.random.seed(1)
+
+            all_bg_idx = np.argwhere(ground == 0)
+            rand_bg_idx = np.random.choice(all_bg_idx.shape[0], n_features // 2, False)
             selected_bg_idx = all_bg_idx[rand_bg_idx]
 
             self.selected_fg_idx = tuple(selected_fg_idx.T)

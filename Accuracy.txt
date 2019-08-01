@@ -1,3 +1,5 @@
+Thresholding with a value obtained from the training data
+
 --SINGLE--
 Threshold: 64
 Train accuracy: 0.916151059184999
