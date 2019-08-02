@@ -34,7 +34,7 @@ def main():
     # bin = cv2.threshold(line_str, 65, 255, cv2.THRESH_BINARY)[1]
 
     timer.start('Find best threshold')
-    thresh, single_thresh, acc = find_best_thresh(line_str, ground, mask)
+    thresh, single_thresh, acc, fpr_list, tpr_list = find_best_thresh(line_str, ground, mask)
     timer.stop()
 
     print(thresh)

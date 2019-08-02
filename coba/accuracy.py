@@ -1,13 +1,22 @@
 import numpy as np
 from sklearn.metrics import classification_report
+from sklearn.metrics import confusion_matrix
+from util.data_util import binary_confusion_matrix
 
-a = np.zeros((4, 4), np.uint8)
-b = a.copy()
+pred = np.zeros((4, 4), np.uint8)
+true = pred.copy()
 
-a[2:, 2:] = 1
-b[1:-1, 1:-1] = 1
+pred[2:, 2:] = 1
+true[1:-1, 1:-1] = 1
 
-print(a)
-print(b)
+pred = pred.ravel()
+true = true.ravel()
 
-print(classification_report(b.ravel(), a.ravel()))
+acc = classification_report(true, pred)
+tn, fp, fn, tp = confusion_matrix(true, pred).ravel()
+tn_, fp_, fn_, tp_ = binary_confusion_matrix(true, pred).ravel()
+
+print(pred)
+print(true)
+print(tn, fp, fn, tp)
+print(tn_, fp_, fn_, tp_)
