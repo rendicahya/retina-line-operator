@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 from sklearn.metrics import roc_curve, auc
 from util.numpy_util import to_numpy_array
+import numpy_indexed as npi
 
 
 def normalize(data):
@@ -46,8 +47,8 @@ def binary_confusion_matrix(true, pred):
         print('Unequal classes in pred and true')
         return
 
-    true = replace_ordered(true)
-    pred = replace_ordered(pred)
+    true = replace_ordered2(true)
+    pred = replace_ordered2(pred)
 
     return np.bincount(true * true_classes.size + pred).reshape((true_classes.size, true_classes.size))
 
@@ -61,9 +62,13 @@ def replace_ordered(arr):
     return arr_c
 
 
+def replace_ordered2(arr):
+    return npi.remap(arr, np.unique(arr), np.arange(np.unique(arr).size))
+
+
 if __name__ == '__main__':
     arr = np.array([1, 5, 3, 8, 1, 8, 3])
 
     print(arr)
-    arr = replace_ordered(arr)
+    arr = replace_ordered2(arr)
     print(arr)
