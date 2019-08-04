@@ -35,9 +35,9 @@ def main():
 
     print(auc)
 
-    # timer.start('Find best threshold')
-    # thresh, single_thresh, acc, fpr_list, tpr_list = find_best_thresh(line_str, ground, mask)
-    # timer.stop()
+    timer.start('Find best threshold')
+    thresh, single_thresh, acc, fpr_list, tpr_list = find_best_thresh(line_str, ground, mask)
+    timer.stop()
 
     # print(thresh)
 
