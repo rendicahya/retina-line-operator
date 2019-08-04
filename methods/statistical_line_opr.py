@@ -118,9 +118,9 @@ def main():
     img = 255 - img[:, :, 1]
     size = 15
 
-    window_avg = cached_integral(path, img, mask, size)
+    window = cached_integral(path, img, mask, size)
     stat = cached_statistics(path, img, mask, size)
-    min_window = norm_masked(subtract_masked(stat['min'], window_avg, mask), mask)
+    min_window = norm_masked(subtract_masked(stat['min'], window, mask), mask)
     min_window = 255 - cv2.threshold(min_window, 138, 255, cv2.THRESH_BINARY)[1]
     min_window[mask == 0] = 0
     img[min_window == 255] = 255
