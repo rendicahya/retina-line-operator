@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 
 from util.numpy_util import to_numpy_array
+from sklearn.metrics import roc_auc_score
 
 
 def normalize(data):
@@ -25,6 +26,13 @@ def specificity(pred, true):
     temp = pred[true == 0]
 
     return (temp.size - np.count_nonzero(temp)) / temp.size
+
+
+def auc_score(ground, line_str, mask):
+    ground[ground == 255] = 1
+    line_str = cv2.normalize(line_str, None, 0, 1, cv2.NORM_MINMAX, cv2.CV_64F, mask)
+
+    return roc_auc_score(ground.ravel(), line_str.ravel())
 
 
 def confusion_matrix(true, pred):

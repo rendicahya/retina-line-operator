@@ -12,7 +12,6 @@ def normalize(image):
 def norm_masked(img, mask):
     return cv2.normalize(img, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U, mask)
 
-def zero_one_norm_masked(img, mask)
 
 def find_best_thresh(img, ground, mask):
     ground_fov = ground[mask == 255]

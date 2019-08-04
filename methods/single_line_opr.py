@@ -1,12 +1,10 @@
-import cv2
-
 from dataset.DriveDatasetLoader import DriveDatasetLoader
 from methods.statistical_line_opr import cached_statistics
 from methods.window_average import cached_integral
-from util.image_util import find_best_thresh
+from util.data_util import auc_score
 from util.image_util import norm_masked, subtract_masked
 from util.timer import Timer
-from sklearn.metrics import roc_curve
+
 
 def cached_single(path, img, mask, size):
     window_avg = cached_integral(path, img, mask, size)
@@ -28,23 +26,27 @@ def main():
     timer = Timer()
 
     timer.start('Single')
-    line_str = cached_single_norm(path, img, mask, size)
+    line_str = cached_single(path, img, mask, size)
     timer.stop()
 
-    # bin = cv2.threshold(line_str, 65, 255, cv2.THRESH_BINARY)[1]
-
-    timer.start('Find best threshold')
-    thresh, single_thresh, acc, fpr_list, tpr_list = find_best_thresh(line_str, ground, mask)
+    timer.start('AUC')
+    auc = auc_score(ground, line_str, mask)
     timer.stop()
 
-    print(thresh)
+    print(auc)
 
-    cv2.imshow('Image', img)
-    cv2.imshow('Single', line_str)
-    cv2.imshow('Single thresh', single_thresh)
-    cv2.imshow('Ground truth', ground)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    # timer.start('Find best threshold')
+    # thresh, single_thresh, acc, fpr_list, tpr_list = find_best_thresh(line_str, ground, mask)
+    # timer.stop()
+
+    # print(thresh)
+
+    # cv2.imshow('Image', img)
+    # cv2.imshow('Single', line_str)
+    # cv2.imshow('Single thresh', single_thresh)
+    # cv2.imshow('Ground truth', ground)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
     # cv2.imwrite(r'C:\Users\Randy Cahya Wihandik\Desktop\single.png', 255 - line_str)
     # cv2.imwrite(r'C:\Users\Randy Cahya Wihandik\Desktop\single-thresh.png', 255 - single_thresh)
 
