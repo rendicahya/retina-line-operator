@@ -25,10 +25,9 @@ def main():
     path, img, mask, ground = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training_one(1)
     img = 255 - img[:, :, 1]
     size = 15
-
     line_str = cached_single(path, img, mask, size)
     auc = auc_score(ground, line_str, mask)
-    thresh, single_thresh, acc = find_best_thresh(line_str, ground, mask)
+    thresh, bin, acc = find_best_thresh(line_str, ground, mask)
 
     print('AUC:', auc)
     print('Acc:', acc)
@@ -36,12 +35,12 @@ def main():
 
     cv2.imshow('Image', img)
     cv2.imshow('Single', norm_masked(line_str, mask))
-    cv2.imshow('Single thresh', single_thresh)
+    cv2.imshow('Binary', bin)
     cv2.imshow('Ground truth', ground)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
     # cv2.imwrite(r'C:\Users\Randy Cahya Wihandik\Desktop\single.png', 255 - line_str)
-    # cv2.imwrite(r'C:\Users\Randy Cahya Wihandik\Desktop\single-thresh.png', 255 - single_thresh)
+    # cv2.imwrite(r'C:\Users\Randy Cahya Wihandik\Desktop\single-thresh.png', 255 - bin)
 
 
 if __name__ == '__main__':

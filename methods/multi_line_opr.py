@@ -7,6 +7,8 @@ import numpy as np
 from dataset.DriveDatasetLoader import DriveDatasetLoader
 from methods.statistical_line_opr import cached_statistics
 from methods.window_average import cached_integral
+from util.data_util import auc_score
+from util.image_util import find_best_thresh
 from util.image_util import norm_masked, subtract_masked
 from util.timer import Timer
 
@@ -55,29 +57,24 @@ def save_cache():
 
 
 def main():
-    path, img, mask, ground_truth = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training_one(1)
-
+    path, img, mask, ground = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training_one(1)
     img = 255 - img[:, :, 1]
     size = 15
-    timer = Timer()
+    line_str = cached_multi(path, img, mask, size)
+    auc = auc_score(ground, line_str, mask)
+    thresh, bin, acc = find_best_thresh(line_str, ground, mask)
 
-    timer.start('Multi scale')
-    multi_scale = cached_multi_norm(path, img, mask, size)
-    timer.stop()
-
-    # timer.start('Find best multi scale')
-    # best_multi_thresh, best_multi = find_best_threshold(multi_scale, mask, ground_truth)
-    # timer.finish()
+    print('AUC:', auc)
+    print('Acc:', acc)
+    print('Thresh:', thresh)
 
     cv2.imshow('Image', img)
-    cv2.imshow('Multi', multi_scale)
-    # cv2.imshow('Best multi', 255 - normalize_masked(best_multi, mask))
-    # cv2.imshow('Ground truth', ground_truth)
-    # cv2.imshow('Best binary', binary)
-    # cv2.imshow('Multi', normalized_masked(multi_scale_norm, mask))
+    cv2.imshow('Multi', norm_masked(line_str, mask))
+    cv2.imshow('Binary', bin)
+    cv2.imshow('Ground truth', ground)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':
-    save_cache()
+    main()
