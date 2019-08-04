@@ -2,16 +2,17 @@ import cv2
 import numpy as np
 
 from util.data_util import accuracy
-from util.data_util import binary_confusion_matrix
+from util.data_util import confusion_matrix
 
 
 def normalize(image):
     return cv2.normalize(image, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U)
 
 
-def normalize_masked(img, mask):
+def norm_masked(img, mask):
     return cv2.normalize(img, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U, mask)
 
+def zero_one_norm_masked(img, mask)
 
 def find_best_thresh(img, ground, mask):
     ground_fov = ground[mask == 255]
@@ -26,7 +27,7 @@ def find_best_thresh(img, ground, mask):
     for t in range(1, 255):
         bin = cv2.threshold(img, t, 255, cv2.THRESH_BINARY)[1]
         bin_fov = bin[mask == 255]
-        tn, fp, fn, tp = binary_confusion_matrix(ground_fov.ravel(), bin_fov.ravel()).ravel()
+        tn, fp, fn, tp = confusion_matrix(ground_fov.ravel(), bin_fov.ravel()).ravel()
         fpr = fp / n
         tpr = tp / p
 

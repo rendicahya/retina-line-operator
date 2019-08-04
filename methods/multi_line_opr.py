@@ -7,14 +7,14 @@ import numpy as np
 from dataset.DriveDatasetLoader import DriveDatasetLoader
 from methods.statistical_line_opr import cached_statistics
 from methods.window_average import cached_integral
-from util.image_util import normalize_masked, subtract_masked
+from util.image_util import norm_masked, subtract_masked
 from util.timer import Timer
 
 
 def cached_multi_norm(path, img, mask, size):
     line_str = cached_multi(path, img, mask, size)
 
-    return normalize_masked(line_str, mask)
+    return norm_masked(line_str, mask)
 
 
 def cached_multi(path, img, mask, size):

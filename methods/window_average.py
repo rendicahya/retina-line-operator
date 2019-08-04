@@ -131,7 +131,7 @@ def main():
     timer.stop()
 
     cv2.imshow('Image', image)
-    cv2.imshow('Window average', normalize_masked(window_avg, mask))
+    cv2.imshow('Window average', norm_masked(window_avg, mask))
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 

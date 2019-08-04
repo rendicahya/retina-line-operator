@@ -9,14 +9,14 @@ import psutil
 
 from dataset.DriveDatasetLoader import DriveDatasetLoader
 from methods import line_factory
-from util.image_util import normalize_masked
+from util.image_util import norm_masked
 from util.timer import Timer
 
 
 def cached_disk_norm(path, img, mask, size):
     disk = cached_disk(path, img, mask, size)
 
-    return normalize_masked(disk, mask)
+    return norm_masked(disk, mask)
 
 
 def cached_disk(path, img, mask, size):
@@ -137,7 +137,7 @@ def main():
     disk = cached_disk(path, img, mask, size)
     timer.stop()
 
-    disk = normalize_masked(disk, mask)
+    disk = norm_masked(disk, mask)
     thresh, disk = cv2.threshold(disk, 75, 255, cv2.THRESH_BINARY)
     disk = cv2.erode(disk, np.ones((3, 3), np.uint8), iterations=1)
     img[disk == 255] = 255

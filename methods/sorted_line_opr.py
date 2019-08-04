@@ -142,7 +142,7 @@ def main():
 
     cv2.imshow('Image', img)
     # cv2.imshow('Window average', normalize_masked(window_avg, mask))
-    cv2.imshow('Single', normalize_masked(single_img, mask))
+    cv2.imshow('Single', norm_masked(single_img, mask))
     # cv2.imshow('Single + wing', normalize_masked(255 - single_scale_wing, mask))
     # cv2.imshow('Single best', 255 - normalize_masked(best_single, mask))
     # cv2.imshow('Multi', normalize_masked(multi_scale, mask))

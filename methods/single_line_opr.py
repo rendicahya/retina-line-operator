@@ -4,9 +4,9 @@ from dataset.DriveDatasetLoader import DriveDatasetLoader
 from methods.statistical_line_opr import cached_statistics
 from methods.window_average import cached_integral
 from util.image_util import find_best_thresh
-from util.image_util import normalize_masked, subtract_masked
+from util.image_util import norm_masked, subtract_masked
 from util.timer import Timer
-
+from sklearn.metrics import roc_curve
 
 def cached_single(path, img, mask, size):
     window_avg = cached_integral(path, img, mask, size)
@@ -18,7 +18,7 @@ def cached_single(path, img, mask, size):
 def cached_single_norm(path, img, mask, size):
     line_str = cached_single(path, img, mask, size)
 
-    return normalize_masked(line_str, mask)
+    return norm_masked(line_str, mask)
 
 
 def main():
