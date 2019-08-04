@@ -6,7 +6,6 @@ from methods.window_average import cached_integral
 from util.data_util import auc_score
 from util.image_util import find_best_thresh
 from util.image_util import norm_masked, subtract_masked
-from util.timer import Timer
 
 
 def cached_single(path, img, mask, size):
