@@ -26,7 +26,6 @@ def main():
     path, img, mask, ground = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training_one(1)
     img = 255 - img[:, :, 1]
     size = 15
-    timer = Timer()
 
     line_str = cached_single(path, img, mask, size)
     auc = auc_score(ground, line_str, mask)
