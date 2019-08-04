@@ -2,6 +2,7 @@ from dataset.DriveDatasetLoader import DriveDatasetLoader
 from methods.statistical_line_opr import cached_statistics
 from methods.window_average import cached_integral
 from util.data_util import auc_score
+from util.image_util import find_best_thresh
 from util.image_util import norm_masked, subtract_masked
 from util.timer import Timer
 
@@ -33,13 +34,17 @@ def main():
     auc = auc_score(ground, line_str, mask)
     timer.stop()
 
-    print(auc)
+    print(ground.min())
+    print(ground.max())
+    print(line_str.min())
+    print(line_str.max())
 
     timer.start('Find best threshold')
-    thresh, single_thresh, acc, fpr_list, tpr_list = find_best_thresh(line_str, ground, mask)
+    thresh, single_thresh, acc = find_best_thresh(line_str, ground, mask)
     timer.stop()
 
-    # print(thresh)
+    print(auc)
+    print(thresh)
 
     # cv2.imshow('Image', img)
     # cv2.imshow('Single', line_str)

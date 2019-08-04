@@ -29,6 +29,7 @@ def specificity(pred, true):
 
 
 def auc_score(ground, line_str, mask):
+    ground = ground.copy()
     ground[ground == 255] = 1
     line_str = cv2.normalize(line_str, None, 0, 1, cv2.NORM_MINMAX, cv2.CV_64F, mask)
 
