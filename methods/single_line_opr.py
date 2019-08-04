@@ -1,3 +1,5 @@
+import cv2
+
 from dataset.DriveDatasetLoader import DriveDatasetLoader
 from methods.statistical_line_opr import cached_statistics
 from methods.window_average import cached_integral
@@ -26,32 +28,20 @@ def main():
     size = 15
     timer = Timer()
 
-    timer.start('Single')
     line_str = cached_single(path, img, mask, size)
-    timer.stop()
-
-    timer.start('AUC')
     auc = auc_score(ground, line_str, mask)
-    timer.stop()
-
-    print(ground.min())
-    print(ground.max())
-    print(line_str.min())
-    print(line_str.max())
-
-    timer.start('Find best threshold')
     thresh, single_thresh, acc = find_best_thresh(line_str, ground, mask)
-    timer.stop()
 
-    print(auc)
-    print(thresh)
+    print('AUC:', auc)
+    print('Acc:', acc)
+    print('Thresh:', thresh)
 
-    # cv2.imshow('Image', img)
-    # cv2.imshow('Single', line_str)
-    # cv2.imshow('Single thresh', single_thresh)
-    # cv2.imshow('Ground truth', ground)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
+    cv2.imshow('Image', img)
+    cv2.imshow('Single', norm_masked(line_str, mask))
+    cv2.imshow('Single thresh', single_thresh)
+    cv2.imshow('Ground truth', ground)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
     # cv2.imwrite(r'C:\Users\Randy Cahya Wihandik\Desktop\single.png', 255 - line_str)
     # cv2.imwrite(r'C:\Users\Randy Cahya Wihandik\Desktop\single-thresh.png', 255 - single_thresh)
 
