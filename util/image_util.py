@@ -12,6 +12,10 @@ def subtract_line_str(line, window, mask):
     return cv2.subtract(line.astype(np.float64), window, None, mask)
 
 
+def zero_one_norm(data):
+    return cv2.normalize(data, None, 0, 1, cv2.NORM_MINMAX, cv2.CV_64F)
+
+
 def find_best_thresh(line_str, ground, mask):
     line_str = gray_norm(line_str, mask)
     ground_fov = ground[mask == 255]

@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 from methods.multi_line_opr import cached_multi
-from util.data_util import zero_one_norm
+from util.image_util import zero_one_norm
 
 
 class FeatureExtractor:
