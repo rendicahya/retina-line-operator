@@ -8,7 +8,7 @@ def gray_norm(img, mask=None):
     return cv2.normalize(img, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U, mask)
 
 
-def subtract_masked(line, window, mask):
+def subtract_line_str(line, window, mask):
     return cv2.subtract(line.astype(np.float64), window, None, mask)
 
 

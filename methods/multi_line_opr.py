@@ -9,7 +9,7 @@ from methods.statistical_line_opr import cached_statistics
 from methods.window_average import cached_integral
 from util.data_util import auc_score
 from util.image_util import find_best_thresh
-from util.image_util import gray_norm, subtract_masked
+from util.image_util import gray_norm, subtract_line_str
 from util.timer import Timer
 
 
@@ -32,7 +32,7 @@ def cached_multi(path, img, mask, size):
         line_str = pickle.load(binary_file)
     else:
         window = cached_integral(path, img, mask, size)
-        line_str = [subtract_masked(cached_statistics(path, img, mask, size)['max'], window, mask)
+        line_str = [subtract_line_str(cached_statistics(path, img, mask, size)['max'], window, mask)
                     for size in range(1, size + 1, 2)]
         line_str = np.average(np.stack(line_str), axis=0)
         binary_file = open(file_path, mode='wb')

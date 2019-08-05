@@ -118,7 +118,7 @@ def main():
 
     timer.start('Single')
     line_img = line(img, mask, size)
-    single_img = subtract_masked(line_img, window_avg, mask)
+    single_img = subtract_line_str(line_img, window_avg, mask)
     timer.stop()
 
     # timer.start('Single scale + wing')

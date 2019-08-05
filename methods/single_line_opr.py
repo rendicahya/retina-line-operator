@@ -5,14 +5,14 @@ from methods.statistical_line_opr import cached_statistics
 from methods.window_average import cached_integral
 from util.data_util import auc_score
 from util.image_util import find_best_thresh
-from util.image_util import gray_norm, subtract_masked
+from util.image_util import gray_norm, subtract_line_str
 
 
 def cached_single(path, img, mask, size):
     window_avg = cached_integral(path, img, mask, size)
     line_img = cached_statistics(path, img, mask, size)['max']
 
-    return subtract_masked(line_img, window_avg, mask)
+    return subtract_line_str(line_img, window_avg, mask)
 
 
 def cached_single_norm(path, img, mask, size):
