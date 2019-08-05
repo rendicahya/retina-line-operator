@@ -51,12 +51,12 @@ def test_line_no_training():
     green(f'Test average accuracy: {acc}')
 
 
-def test_optic():
+def test_optic_with_training():
     train_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
     test_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
     # op = cached_single_norm
     op = cached_multi_norm
-    thresh = 119
+    thresh = 64
     timer = Timer()
 
     timer.start('Train')
@@ -68,8 +68,8 @@ def test_optic():
     timer.stop()
 
     blue(f'Disk threshold: {disk_thresh}')
-    blue(f'Train accuracy: {train_acc}')
-    blue(f'Test accuracy: {test_acc}')
+    blue(f'Train average accuracy: {train_acc}')
+    blue(f'Test average accuracy: {test_acc}')
 
 
 def test_proposed():
@@ -94,4 +94,4 @@ def test_proposed():
 
 
 if __name__ == '__main__':
-    test_line_no_training()
+    test_optic_with_training()
