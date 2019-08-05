@@ -5,7 +5,7 @@ from methods.statistical_line_opr import cached_statistics
 from methods.window_average import cached_integral
 from util.data_util import auc_score
 from util.image_util import find_best_thresh
-from util.image_util import gray_norm_masked, subtract_masked
+from util.image_util import gray_norm, subtract_masked
 
 
 def cached_single(path, img, mask, size):
@@ -18,7 +18,7 @@ def cached_single(path, img, mask, size):
 def cached_single_norm(path, img, mask, size):
     line_str = cached_single(path, img, mask, size)
 
-    return gray_norm_masked(line_str, mask)
+    return gray_norm(line_str, mask)
 
 
 def main():
@@ -34,7 +34,7 @@ def main():
     print('Thresh:', thresh)
 
     cv2.imshow('Image', img)
-    cv2.imshow('Single', gray_norm_masked(line_str, mask))
+    cv2.imshow('Single', gray_norm(line_str, mask))
     cv2.imshow('Binary', bin)
     cv2.imshow('Ground truth', ground)
     cv2.waitKey(0)
