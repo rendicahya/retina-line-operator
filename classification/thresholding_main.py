@@ -12,23 +12,6 @@ from util.print_color import *
 from util.timer import Timer
 
 
-def get_accuracy(op, data, thresh):
-    size = 15
-    acc_list = []
-
-    for path, img, mask, ground in data:
-        img = 255 - img[:, :, 1]
-        line_str = op(path, img, mask, size)
-        bin = cv2.threshold(line_str, thresh, 255, cv2.THRESH_BINARY)[1]
-        bin_fov = bin[mask == 255]
-        ground_fov = ground[mask == 255]
-        acc = accuracy(bin_fov, ground_fov)
-
-        acc_list.append(acc)
-
-    return np.mean(acc_list)
-
-
 def find_best_acc_train_data(op, data):
     best_acc = 0
     best_thresh = 0
@@ -54,6 +37,23 @@ def find_best_acc_train_data(op, data):
             best_thresh = thresh
 
     return best_thresh, best_acc
+
+
+def get_accuracy(op, data, thresh):
+    size = 15
+    acc_list = []
+
+    for path, img, mask, ground in data:
+        img = 255 - img[:, :, 1]
+        line_str = op(path, img, mask, size)
+        bin = cv2.threshold(line_str, thresh, 255, cv2.THRESH_BINARY)[1]
+        bin_fov = bin[mask == 255]
+        ground_fov = ground[mask == 255]
+        acc = accuracy(bin_fov, ground_fov)
+
+        acc_list.append(acc)
+
+    return np.mean(acc_list)
 
 
 def find_best_acc_disk(op, thresh, data):
