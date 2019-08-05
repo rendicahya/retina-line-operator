@@ -7,18 +7,6 @@ from util.data_util import auc_score, accuracy
 from util.image_util import find_best_thresh
 
 
-def calc_auc(data, op, size):
-    auc_list = []
-
-    for path, img, mask, ground in data:
-        line_str = op(path, img, mask, size)
-        auc = auc_score(ground, line_str, mask)
-
-        auc_list.append(auc)
-
-    return np.mean(auc_list)
-
-
 def find_best_acc(op, data, size):
     best_acc = 0
     best_thresh = 0
@@ -43,6 +31,31 @@ def find_best_acc(op, data, size):
             best_thresh = thresh
 
     return best_thresh, best_acc
+
+
+def find_best_acc_each(op, data, size):
+    acc_list = []
+
+    for path, img, mask, ground in data:
+        img = 255 - img[:, :, 1]
+        line_str = op(path, img, mask, size)
+        acc = find_best_thresh(line_str, ground, mask)[2]
+
+        acc_list.append(acc)
+
+    return np.mean(acc_list)
+
+
+def calc_auc(data, op, size):
+    auc_list = []
+
+    for path, img, mask, ground in data:
+        line_str = op(path, img, mask, size)
+        auc = auc_score(ground, line_str, mask)
+
+        auc_list.append(auc)
+
+    return np.mean(auc_list)
 
 
 def get_accuracy(op, data, thresh, size):
@@ -167,18 +180,3 @@ def get_accuracy_proposed(op, data, thresh, proposed_thresh):
         acc_list.append(acc)
 
     return np.mean(acc_list)
-
-
-def find_best_acc_avg_each(op, data):
-    acc_list = []
-    size = 15
-
-    for path, img, mask, ground in data:
-        img = 255 - img[:, :, 1]
-        line_str = op(path, img, mask, size)
-        acc = find_best_thresh(line_str, ground, mask)[2]
-
-        acc_list.append(acc)
-
-    print(np.mean(acc_list))
-    print(np.max(acc_list))

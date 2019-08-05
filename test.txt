@@ -6,10 +6,8 @@ Test average accuracy: 0.9170919295896194
 Test average AUC: 0.9648145561923259
 
 Single-scale line operator WITHOUT training
-
---SINGLE DISK--
-Train accuracy: 0.9167789152620461
-Test accuracy: 0.9175151404782348
+Train average accuracy: 0.9320052951830796
+Test average accuracy: 0.9344242200906547
 
 Multi-scale line operator WITH training
 Threshold: 119
@@ -17,3 +15,11 @@ Train average average accuracy: 0.9053773947330853
 Train average AUC: 0.9554629297032269
 Test average average accuracy: 0.9030168910354546
 Test average AUC: 0.9584733140159173
+
+Multi-scale line operator WITHOUT training
+Train average accuracy: 0.9393863856069318
+Test average accuracy: 0.9420958937291795
+
+--SINGLE DISK--
+Train accuracy: 0.9167789152620461
+Test accuracy: 0.9175151404782348
