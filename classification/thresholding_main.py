@@ -9,34 +9,8 @@ from methods.single_line_opr import cached_single_norm
 from util.data_util import accuracy
 from util.image_util import find_best_thresh
 from util.print_color import *
+from util.test_util import find_best_acc_train_data
 from util.timer import Timer
-
-
-def find_best_acc_train_data(op, data):
-    best_acc = 0
-    best_thresh = 0
-    size = 15
-
-    for thresh in range(1, 255):
-        acc_list = []
-
-        for path, img, mask, ground in data:
-            img = 255 - img[:, :, 1]
-            line_str = op(path, img, mask, size)
-            bin = cv2.threshold(line_str, thresh, 255, cv2.THRESH_BINARY)[1]
-            bin_fov = bin[mask == 255]
-            ground_fov = ground[mask == 255]
-            acc = accuracy(bin_fov, ground_fov)
-
-            acc_list.append(acc)
-
-        avg = np.mean(acc_list)
-
-        if avg > best_acc:
-            best_acc = avg
-            best_thresh = thresh
-
-    return best_thresh, best_acc
 
 
 def get_accuracy(op, data, thresh):
