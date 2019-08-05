@@ -4,16 +4,16 @@ import numpy as np
 from util.data_util import accuracy
 
 
-def normalize(image):
+def grayscale_norm(image):
     return cv2.normalize(image, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U)
 
 
-def norm_masked(img, mask):
+def gray_norm_masked(img, mask):
     return cv2.normalize(img, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U, mask)
 
 
 def find_best_thresh(line_str, ground, mask):
-    line_str = norm_masked(line_str, mask)
+    line_str = gray_norm_masked(line_str, mask)
     ground_fov = ground[mask == 255]
     acc_list = []
     img_list = []

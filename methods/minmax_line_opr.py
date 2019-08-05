@@ -15,7 +15,7 @@ from util.timer import Timer
 def cached_basic_norm(path, image, mask, size):
     line_str = cached_basic(path, image, mask, size)
 
-    return norm_masked(line_str, mask)
+    return gray_norm_masked(line_str, mask)
 
 
 def cached_basic(path, image, mask, size):
@@ -149,7 +149,7 @@ def main():
     # green('Best multi scale threshold: %d' % best_multi_thresh)
 
     cv2.imshow('Image', image)
-    cv2.imshow('Minmax', norm_masked(line_str, mask))
+    cv2.imshow('Minmax', gray_norm_masked(line_str, mask))
     # cv2.imshow('Single scale + wing', normalize_masked(255 - single_scale_wing, mask))
     # cv2.imshow('Single scale best', 255 - normalize_masked(best_single, mask))
     # cv2.imshow('Multi scale', normalize_masked(multi_scale, mask))

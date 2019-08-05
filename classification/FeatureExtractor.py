@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 from methods.multi_line_opr import cached_multi
-from util.data_util import normalize
+from util.data_util import zero_one_norm
 
 
 class FeatureExtractor:
@@ -33,7 +33,7 @@ class FeatureExtractor:
 
     def get_pixel_feat(self):
         fov = self.image[self.mask == 255]
-        norm_fov = normalize(fov).ravel()
+        norm_fov = zero_one_norm(fov).ravel()
 
         if self.selected_fg_idx is None or self.selected_bg_idx is None:
             return norm_fov
@@ -82,7 +82,7 @@ class FeatureExtractor:
     def get_single_linestr_feat(self):
         line_str = cached_multi(self.path, self.image, self.mask, self.size)
         line_str_fov = line_str[self.mask == 255]
-        norm_fov_data = normalize(line_str_fov).ravel()
+        norm_fov_data = zero_one_norm(line_str_fov).ravel()
 
         if self.selected_fg_idx is None or self.selected_bg_idx is None:
             return norm_fov_data
@@ -98,7 +98,7 @@ class FeatureExtractor:
     def get_multi_linestr_feat(self):
         line_str = cached_multi(self.path, self.image, self.mask, self.size)
         line_str_fov = line_str[self.mask == 255]
-        norm_fov_data = normalize(line_str_fov).ravel()
+        norm_fov_data = zero_one_norm(line_str_fov).ravel()
 
         if self.selected_fg_idx is None or self.selected_bg_idx is None:
             return norm_fov_data

@@ -5,7 +5,7 @@ from util.numpy_util import to_numpy_array
 from sklearn.metrics import roc_auc_score
 
 
-def normalize(data):
+def zero_one_norm(data):
     return cv2.normalize(data, None, 0, 1, cv2.NORM_MINMAX, cv2.CV_64F)
 
 

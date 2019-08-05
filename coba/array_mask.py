@@ -1,5 +1,4 @@
 import numpy as np
-from util.image_util import normalize
 
 a, b = 3, 3
 n = 7
