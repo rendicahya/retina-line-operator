@@ -26,10 +26,10 @@ def test_line_with_training():
     timer.stop()
 
     green(f'Threshold: {thresh}')
-    green(f'Train accuracy: {train_acc}')
-    green(f'Train AUC: {train_auc}')
-    green(f'Test accuracy: {test_acc}')
-    green(f'Test AUC: {test_auc}')
+    green(f'Train average accuracy: {train_acc}')
+    green(f'Train average AUC: {train_auc}')
+    green(f'Test average accuracy: {test_acc}')
+    green(f'Test average AUC: {test_auc}')
 
     # cv2.imshow('Image', linestr)
     # cv2.waitKey(0)
