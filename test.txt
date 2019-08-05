@@ -1,15 +1,17 @@
-Thresholding with a value obtained from the training data
-
---SINGLE--
+Single-scale line operator WITH training
 Threshold: 64
 Train accuracy: 0.916151059184999
+Train AUC: 0.9616026500320016
 Test accuracy: 0.9170919295896194
+Test AUC: 0.9648145561923259
+
+Single-scale line operator WITHOUT training
 
 --SINGLE DISK--
 Train accuracy: 0.9167789152620461
 Test accuracy: 0.9175151404782348
 
---MULTI--
+Multi-scale line operator WITH training
 Threshold: 119
 Train accuracy: 0.9053773947330853
 Test accuracy: 0.9030168910354546

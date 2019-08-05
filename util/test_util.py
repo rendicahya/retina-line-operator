@@ -7,8 +7,7 @@ from util.data_util import auc_score, accuracy
 from util.image_util import find_best_thresh
 
 
-def calc_auc(data, op):
-    size = 15
+def calc_auc(data, op, size):
     auc_list = []
 
     for path, img, mask, ground in data:
@@ -20,10 +19,9 @@ def calc_auc(data, op):
     return np.mean(auc_list)
 
 
-def find_best_acc(op, data):
+def find_best_acc(op, data, size):
     best_acc = 0
     best_thresh = 0
-    size = 15
 
     for thresh in range(1, 255):
         acc_list = []
@@ -47,8 +45,7 @@ def find_best_acc(op, data):
     return best_thresh, best_acc
 
 
-def get_accuracy(op, data, thresh):
-    size = 15
+def get_accuracy(op, data, thresh, size):
     acc_list = []
 
     for path, img, mask, ground in data:
@@ -129,7 +126,7 @@ def find_best_acc_proposed(op, thresh, data):
     return best_thresh, best_acc
 
 
-def get_accuracy_disk(op, data, thresh, disk_thresh):
+def get_accuracy_optic(op, data, thresh, disk_thresh):
     size = 15
     acc_list = []
 

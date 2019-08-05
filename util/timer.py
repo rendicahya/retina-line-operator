@@ -5,9 +5,9 @@ from util.print_color import blue
 
 
 class Timer:
-
     def start(self, msg):
         self.start_time = perf_counter()
+
         blue(f'{msg}: ', end='')
 
     def stop(self):
