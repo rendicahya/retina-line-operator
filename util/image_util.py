@@ -25,8 +25,9 @@ def find_best_thresh(line_str, ground, mask):
     for t in range(1, 255):
         bin = cv2.threshold(line_str, t, 255, cv2.THRESH_BINARY)[1]
         bin_fov = bin[mask == 255]
+        acc = accuracy(bin_fov, ground_fov)
 
-        acc_list.append(accuracy(bin_fov, ground_fov))
+        acc_list.append(acc)
         img_list.append(bin)
 
     best = np.argmax(acc_list)
