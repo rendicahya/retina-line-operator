@@ -9,7 +9,8 @@ import psutil
 
 from dataset.DriveDatasetLoader import DriveDatasetLoader
 from methods import line_factory
-from util.image_util import gray_norm
+from methods.multi_line_opr import cached_multi
+from util.image_util import gray_norm, find_best_thresh
 from util.timer import Timer
 
 
@@ -128,23 +129,24 @@ def save_cache():
 
 
 def main():
-    path, img, mask, ground_truth = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training_one(1)
+    path, img, mask, ground = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training_one(1)
     img = 255 - img[:, :, 1]
     size = 15
-    timer = Timer()
 
-    timer.start('Optic disk')
-    disk = cached_disk(path, img, mask, size)
-    timer.stop()
-
-    disk = gray_norm(disk, mask)
-    thresh, disk = cv2.threshold(disk, 75, 255, cv2.THRESH_BINARY)
+    disk = cached_disk_norm(path, img, mask, size)
+    disk = cv2.threshold(disk, 75, 255, cv2.THRESH_BINARY)[1]
     disk = cv2.erode(disk, np.ones((3, 3), np.uint8), iterations=1)
-    img[disk == 255] = 255
+
+    line_str = cached_multi(path, img, mask, size)
+    line_str[disk == 255] = line_str[mask == 255].min()
+    line_str = gray_norm(line_str, mask)
+    bin = find_best_thresh(line_str, ground, mask)[1]
 
     cv2.imshow('Image', img)
+    cv2.imshow('Line', line_str)
+    cv2.imshow('Binary', bin)
     cv2.imshow('Optic disk', disk)
-    cv2.imshow('Ground truth', ground_truth)
+    cv2.imshow('Ground truth', ground)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
     # cv2.imwrite(r'C:\Users\Randy Cahya Wihandik\Desktop\optic.png', img)

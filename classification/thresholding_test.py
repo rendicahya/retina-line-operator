@@ -1,8 +1,8 @@
 from dataset.DriveDatasetLoader import DriveDatasetLoader
 from methods.multi_line_opr import cached_multi_norm
-from methods.single_line_opr import cached_single_norm
+from methods.single_line_opr import cached_single, cached_single_norm
 from util.print_color import *
-from util.test_util import find_best_acc, get_accuracy, find_best_acc_disk, find_best_acc_proposed, get_accuracy_optic, \
+from util.test_util import find_best_acc, get_accuracy, find_best_acc_optic, find_best_acc_proposed, get_accuracy_optic, \
     get_accuracy_proposed, calc_auc, find_best_acc_each
 from util.timer import Timer
 
@@ -54,13 +54,14 @@ def test_line_no_training():
 def test_optic_with_training():
     train_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
     test_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
-    # op = cached_single_norm
-    op = cached_multi_norm
+    op = cached_single
+    # op = cached_multi
     thresh = 64
+    size = 15
     timer = Timer()
 
     timer.start('Train')
-    disk_thresh, train_acc = find_best_acc_disk(op, thresh, train_data)
+    disk_thresh, train_acc = find_best_acc_optic(op, thresh, train_data, size)
     timer.stop()
 
     timer.start('Test')

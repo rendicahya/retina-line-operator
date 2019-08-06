@@ -21,8 +21,11 @@ Train average accuracy: 0.9393863856069318
 Test average accuracy: 0.9420958937291795
 
 Single-scale optic disk WITH training
-Disk threshold: 64
-Train accuracy: 0.9167789152620461
-Test accuracy: 0.9175151404782348
+Disk threshold: 42
+Train average accuracy: 0.9184168726717781
+Test average accuracy: 0.9172090029757298
 
 Multi-scale optic disk WITH training
+Disk threshold: 64
+Train average accuracy: 0.5162807696672879
+Test average accuracy: 0.18128426590578006

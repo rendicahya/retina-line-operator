@@ -5,11 +5,11 @@ from methods.optic_disk import cached_disk_norm
 from methods.proposed import proposed_norm
 from util.data_util import auc_score, accuracy
 from util.image_util import find_best_thresh
+from util.image_util import gray_norm
 
 
 def find_best_acc(op, data, size):
-    best_acc = 0
-    best_thresh = 0
+    avg_acc_list = []
 
     for thresh in range(1, 255):
         acc_list = []
@@ -24,13 +24,12 @@ def find_best_acc(op, data, size):
 
             acc_list.append(acc)
 
-        avg = np.mean(acc_list)
+        avg_acc = np.mean(acc_list)
+        avg_acc_list.append(avg_acc)
 
-        if avg > best_acc:
-            best_acc = avg
-            best_thresh = thresh
+    best = np.argmax(avg_acc_list)
 
-    return best_thresh, best_acc
+    return best + 1, avg_acc_list[best]
 
 
 def find_best_acc_each(op, data, size):
@@ -74,36 +73,36 @@ def get_accuracy(op, data, thresh, size):
     return np.mean(acc_list)
 
 
-def find_best_acc_disk(op, thresh, data):
-    best_acc = 0
-    best_thresh = 0
-    size = 15
+def find_best_acc_optic(op, thresh, data, size):
+    avg_acc_list = []
 
     for disk_thresh in range(1, 255):
         acc_list = []
 
         for path, img, mask, ground in data:
             img = 255 - img[:, :, 1]
-            line_str = op(path, img, mask, size)
-            bin = cv2.threshold(line_str, thresh, 255, cv2.THRESH_BINARY)[1]
 
             disk = cached_disk_norm(path, img, mask, size)
             disk = cv2.threshold(disk, disk_thresh, 255, cv2.THRESH_BINARY)[1]
             disk = cv2.erode(disk, np.ones((3, 3), np.uint8), iterations=1)
-            bin[disk == 255] = 0
+
+            line_str = op(path, img, mask, size)
+            line_str[disk == 255] = line_str[mask == 255].min()
+            line_str = gray_norm(line_str, mask)
+            bin = cv2.threshold(line_str, thresh, 255, cv2.THRESH_BINARY)[1]
+
             bin_fov = bin[mask == 255]
             ground_fov = ground[mask == 255]
             acc = accuracy(bin_fov, ground_fov)
 
             acc_list.append(acc)
 
-        avg = np.mean(acc_list)
+        avg_acc = np.mean(acc_list)
+        avg_acc_list.append(avg_acc)
 
-        if avg > best_acc:
-            best_acc = avg
-            best_thresh = thresh
+    best = np.argmax(avg_acc_list)
 
-    return best_thresh, best_acc
+    return best + 1, avg_acc_list[best]
 
 
 def find_best_acc_proposed(op, thresh, data):
