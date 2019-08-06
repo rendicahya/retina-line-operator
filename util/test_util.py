@@ -105,6 +105,31 @@ def find_best_acc_optic(op, thresh, data, size):
     return best + 1, avg_acc_list[best]
 
 
+def find_best_acc_optic_each(op, data, size):
+    acc_list = []
+
+    for path, img, mask, ground in data:
+        img = 255 - img[:, :, 1]
+        line_str = op(path, img, mask, size)
+        bin = find_best_thresh(line_str, ground, mask)[1]
+        temp_acc = []
+
+        for disk_thresh in range(1, 255):
+            disk = cached_disk_norm(path, img, mask, size)
+            disk = cv2.threshold(disk, disk_thresh, 255, cv2.THRESH_BINARY)[1]
+            disk = cv2.erode(disk, np.ones((3, 3), np.uint8), iterations=1)
+
+            bin[disk == 255] = 0
+            acc = accuracy(ground, bin)
+
+            temp_acc.append(acc)
+
+        best_acc = np.max(temp_acc)
+        acc_list.append(best_acc)
+
+    return np.mean(acc_list)
+
+
 def find_best_acc_proposed(op, thresh, data):
     best_acc = 0
     best_thresh = 0
