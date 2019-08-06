@@ -81,8 +81,8 @@ def test_optic_no_training():
     data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
     # data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
 
-    # op = cached_single_norm
-    op = cached_multi_norm
+    op = cached_single_norm
+    # op = cached_multi_norm
 
     size = 15
     timer = Timer()
@@ -116,4 +116,4 @@ def test_proposed():
 
 
 if __name__ == '__main__':
-    test_optic_with_training()
+    test_optic_no_training()
