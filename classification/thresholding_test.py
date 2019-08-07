@@ -82,8 +82,8 @@ def optic_with_training():
 
 
 def optic_no_training():
-    # data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
-    data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
+    data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
+    # data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
 
     op = cached_single_norm
     # op = cached_multi_norm
