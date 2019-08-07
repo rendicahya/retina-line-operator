@@ -1,6 +1,6 @@
 from dataset.DriveDatasetLoader import DriveDatasetLoader
 from methods.multi_line_opr import cached_multi_norm, cached_multi
-from methods.single_line_opr import cached_single_norm
+from methods.single_line_opr import cached_single
 from util.print_color import *
 from util.test_util import find_best_acc, get_accuracy, find_best_acc_optic, find_best_acc_proposed, get_accuracy_optic, \
     get_accuracy_proposed, calc_auc, find_best_acc_each, find_best_acc_optic_each
@@ -105,16 +105,17 @@ def proposed_with_training():
     train_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
     test_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
 
-    op = cached_single_norm
-    # op = cached_multi_norm
+    op = cached_single
+    # op = cached_multi
 
     thresh = 64
     optic_thresh = 42
+    size = 15
     timer = Timer()
 
     green('proposed_with_training')
     timer.start('Train')
-    proposed_thresh, train_acc = find_best_acc_proposed(op, thresh, optic_thresh, train_data)
+    proposed_thresh, train_acc = find_best_acc_proposed(op, thresh, optic_thresh, train_data, size)
     timer.stop()
 
     timer.start('Test')
@@ -127,4 +128,4 @@ def proposed_with_training():
 
 
 if __name__ == '__main__':
-    optic_no_training()
+    proposed_with_training()
