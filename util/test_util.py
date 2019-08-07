@@ -170,6 +170,7 @@ def get_accuracy_optic(op, data, thresh, disk_thresh):
     for path, img, mask, ground in data:
         img = 255 - img[:, :, 1]
         line_str = op(path, img, mask, size)
+        line_str = gray_norm(line_str, mask)
         bin = cv2.threshold(line_str, thresh, 255, cv2.THRESH_BINARY)[1]
 
         disk = cached_disk_norm(path, img, mask, size)

@@ -1,6 +1,6 @@
 from dataset.DriveDatasetLoader import DriveDatasetLoader
-from methods.multi_line_opr import cached_multi_norm
-from methods.single_line_opr import cached_single, cached_single_norm
+from methods.multi_line_opr import cached_multi_norm, cached_multi
+from methods.single_line_opr import cached_single_norm
 from util.print_color import *
 from util.test_util import find_best_acc, get_accuracy, find_best_acc_optic, find_best_acc_proposed, get_accuracy_optic, \
     get_accuracy_proposed, calc_auc, find_best_acc_each, find_best_acc_optic_each
@@ -15,6 +15,7 @@ def line_with_training():
     size = 15
     timer = Timer()
 
+    green('line_with_training')
     timer.start('Train')
     thresh, train_acc = find_best_acc(op, train_data, size)
     train_auc = calc_auc(train_data, op, size)
@@ -37,8 +38,8 @@ def line_with_training():
 
 
 def line_no_training():
-    # data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
-    data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
+    data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
+    # data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
 
     # op = cached_single_norm
     op = cached_multi_norm
@@ -46,7 +47,7 @@ def line_no_training():
     size = 15
     timer = Timer()
 
-    timer.start('Find')
+    timer.start('line_no_training')
     acc = find_best_acc_each(op, data, size)
     timer.stop()
 
@@ -57,13 +58,16 @@ def optic_with_training():
     train_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
     test_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
 
-    op = cached_single
-    # op = cached_multi
+    # op = cached_single
+    # thresh = 64
 
-    thresh = 64
+    op = cached_multi
+    thresh = 119
+
     size = 15
     timer = Timer()
 
+    green('optic_with_training')
     timer.start('Train')
     disk_thresh, train_acc = find_best_acc_optic(op, thresh, train_data, size)
     timer.stop()
@@ -81,13 +85,13 @@ def optic_no_training():
     # data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
     data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
 
-    # op = cached_single_norm
-    op = cached_multi_norm
+    op = cached_single_norm
+    # op = cached_multi_norm
 
     size = 15
     timer = Timer()
 
-    timer.start('Find')
+    timer.start('optic_no_training')
     acc = find_best_acc_optic_each(op, data, size)
     timer.stop()
 
@@ -116,4 +120,4 @@ def proposed():
 
 
 if __name__ == '__main__':
-    line_with_training()
+    optic_no_training()
