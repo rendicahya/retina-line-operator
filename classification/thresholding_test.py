@@ -1,6 +1,6 @@
 from dataset.DriveDatasetLoader import DriveDatasetLoader
 from methods.multi_line_opr import cached_multi_norm, cached_multi
-from methods.single_line_opr import cached_single
+from methods.single_line_opr import cached_single, cached_single_norm
 from util.print_color import *
 from util.test_util import find_best_acc, get_accuracy, find_best_acc_optic, find_best_acc_proposed, get_accuracy_optic, \
     get_accuracy_proposed, calc_auc, find_best_acc_each, find_best_acc_optic_each
@@ -119,7 +119,7 @@ def proposed_with_training():
     timer.stop()
 
     timer.start('Test')
-    test_acc = get_accuracy_proposed(op, test_data, thresh, proposed_thresh)
+    test_acc = get_accuracy_proposed(op, test_data, thresh, optic_thresh, proposed_thresh)
     timer.stop()
 
     blue(f'Proposed threshold: {proposed_thresh}')
