@@ -10,8 +10,10 @@ from util.timer import Timer
 def line_with_training():
     train_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
     test_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
+
     # op = cached_single_norm
     op = cached_multi_norm
+
     size = 15
     timer = Timer()
 
@@ -41,8 +43,8 @@ def line_no_training():
     data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
     # data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
 
-    # op = cached_single_norm
-    op = cached_multi_norm
+    op = cached_single_norm
+    # op = cached_multi_norm
 
     size = 15
     timer = Timer()

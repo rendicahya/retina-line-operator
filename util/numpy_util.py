@@ -2,7 +2,7 @@ import numpy as np
 
 
 def to_numpy_array(*args):
-    arr = [item if type(item) is np.ndarray else np.array(item) for item in args]
+    arr = [item[:] if type(item) is np.ndarray else np.array(item) for item in args]
 
     return arr[0] if len(args) == 1 else arr
 

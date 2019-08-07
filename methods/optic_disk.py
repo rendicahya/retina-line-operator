@@ -129,7 +129,7 @@ def save_cache():
 
 
 def main():
-    path, img, mask, ground = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training_one(1)
+    path, img, mask, ground = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training_one(5)
     img = 255 - img[:, :, 1]
     size = 15
 
