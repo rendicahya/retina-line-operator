@@ -84,32 +84,37 @@ def optic_with_training():
 
 
 def optic_no_training():
-    data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
-    # data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
+    # data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
+    data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
 
-    op = cached_single_norm
-    # op = cached_multi_norm
+    # op = cached_single
+    op = cached_multi
 
     size = 15
     timer = Timer()
 
     timer.start('optic_no_training')
-    acc = find_best_acc_optic_each(op, data, size)
+    acc, auc = find_best_acc_optic_each(op, data, size)
     timer.stop()
 
     green(f'Test average accuracy: {acc}')
+    green(f'Test average AUC: {auc}')
 
 
-def proposed():
+def proposed_with_training():
     train_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
     test_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
+
     op = cached_single_norm
     # op = cached_multi_norm
+
     thresh = 64
+    optic_thresh = 42
     timer = Timer()
 
+    green('proposed_with_training')
     timer.start('Train')
-    proposed_thresh, train_acc = find_best_acc_proposed(op, thresh, train_data)
+    proposed_thresh, train_acc = find_best_acc_proposed(op, thresh, optic_thresh, train_data)
     timer.stop()
 
     timer.start('Test')
