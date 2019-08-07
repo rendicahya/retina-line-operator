@@ -127,5 +127,9 @@ def proposed_with_training():
     blue(f'Test accuracy: {test_acc}')
 
 
+def proposed_no_training():
+    pass
+
+
 if __name__ == '__main__':
     proposed_with_training()
