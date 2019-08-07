@@ -1,31 +1,37 @@
-Single-scale WITH training
+Single training
 Threshold: 64
 Train average accuracy: 0.916151059184999
 Train average AUC: 0.9616026500320016
 Test average accuracy: 0.9170919295896194
 Test average AUC: 0.9648145561923259
 
-Single-scale WITHOUT training
+Single NO training
 Train average accuracy: 0.9320052951830796
 Test average accuracy: 0.9344242200906547
 
-Multi-scale WITH training
+Multi training
 Threshold: 119
 Train average average accuracy: 0.9053773947330853
 Train average AUC: 0.9554629297032269
 Test average average accuracy: 0.9030168910354546
 Test average AUC: 0.9584733140159173
 
-Multi-scale WITHOUT training
+Multi NO training
 Train average accuracy: 0.9393863856069318
 Test average accuracy: 0.9420958937291795
 
-Single-scale optic disk WITH training
+-----------------------------------------
+
+Single optic disk training
 Disk threshold: 42
 Train average accuracy: 0.9184168726717781
 Test average accuracy: 0.9172090029757298
 
-Multi-scale optic disk WITH training
+Single optic NO training
+Train average accuracy: 0.9325619772093587
+Test average accuracy: 0.9330897684567827
+
+Multi optic NO training
 Disk threshold: 64
 Train average accuracy: 0.5162807696672879
 Test average accuracy: 0.18128426590578006

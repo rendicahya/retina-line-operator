@@ -7,7 +7,7 @@ from util.test_util import find_best_acc, get_accuracy, find_best_acc_optic, fin
 from util.timer import Timer
 
 
-def test_line_with_training():
+def line_with_training():
     train_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
     test_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
     # op = cached_single_norm
@@ -36,7 +36,7 @@ def test_line_with_training():
     # cv2.destroyAllWindows()
 
 
-def test_line_no_training():
+def line_no_training():
     # data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
     data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
 
@@ -53,7 +53,7 @@ def test_line_no_training():
     green(f'Test average accuracy: {acc}')
 
 
-def test_optic_with_training():
+def optic_with_training():
     train_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
     test_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
 
@@ -77,12 +77,12 @@ def test_optic_with_training():
     blue(f'Test average accuracy: {test_acc}')
 
 
-def test_optic_no_training():
-    data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
-    # data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
+def optic_no_training():
+    # data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
+    data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
 
-    op = cached_single_norm
-    # op = cached_multi_norm
+    # op = cached_single_norm
+    op = cached_multi_norm
 
     size = 15
     timer = Timer()
@@ -94,7 +94,7 @@ def test_optic_no_training():
     green(f'Test average accuracy: {acc}')
 
 
-def test_proposed():
+def proposed():
     train_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
     test_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
     op = cached_single_norm
@@ -116,4 +116,4 @@ def test_proposed():
 
 
 if __name__ == '__main__':
-    test_optic_no_training()
+    line_with_training()
