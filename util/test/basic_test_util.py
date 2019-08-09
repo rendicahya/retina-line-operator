@@ -29,20 +29,7 @@ def basic_train(op, data, size):
     return best + 1, avg_acc_list[best]
 
 
-def basic_test_each(op, data, size):
-    acc_list = []
-
-    for path, img, mask, ground in data:
-        img = 255 - img[:, :, 1]
-        line_str = op(path, img, mask, size)
-        thresh, bin, acc = find_best_thresh(line_str, ground, mask)
-
-        acc_list.append(acc)
-
-    return np.mean(acc_list)
-
-
-def basic_get_acc(op, data, thresh, size):
+def basic_test(op, data, thresh, size):
     acc_list = []
 
     for path, img, mask, ground in data:
@@ -52,6 +39,19 @@ def basic_get_acc(op, data, thresh, size):
         bin_fov = bin[mask == 255]
         ground_fov = ground[mask == 255]
         acc = accuracy(bin_fov, ground_fov)
+
+        acc_list.append(acc)
+
+    return np.mean(acc_list)
+
+
+def basic_test_each(op, data, size):
+    acc_list = []
+
+    for path, img, mask, ground in data:
+        img = 255 - img[:, :, 1]
+        line_str = op(path, img, mask, size)
+        thresh, bin, acc = find_best_thresh(line_str, ground, mask)
 
         acc_list.append(acc)
 

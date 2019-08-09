@@ -39,6 +39,31 @@ def optic_train(op, thresh, data, size):
     return best + 1, avg_acc_list[best]
 
 
+def optic_test(op, data, thresh, optic_thresh):
+    size = 15
+    acc_list = []
+
+    for path, img, mask, ground in data:
+        img = 255 - img[:, :, 1]
+
+        line_str = op(path, img, mask, size)
+        line_str = gray_norm(line_str, mask)
+        bin = cv2.threshold(line_str, thresh, 255, cv2.THRESH_BINARY)[1]
+
+        optic = cached_optic_norm(path, img, mask, size)
+        optic = cv2.threshold(optic, optic_thresh, 255, cv2.THRESH_BINARY)[1]
+        optic = cv2.erode(optic, np.ones((3, 3), np.uint8), iterations=1)
+        bin[optic == 255] = 0
+
+        bin_fov = bin[mask == 255]
+        ground_fov = ground[mask == 255]
+        acc = accuracy(bin_fov, ground_fov)
+
+        acc_list.append(acc)
+
+    return np.mean(acc_list)
+
+
 def optic_test_each(op, data, size):
     acc_list = []
     auc_list = []
@@ -75,28 +100,3 @@ def optic_test_each(op, data, size):
         auc_list.append(auc)
 
     return np.mean(acc_list), np.mean(auc_list)
-
-
-def optic_get_acc(op, data, thresh, optic_thresh):
-    size = 15
-    acc_list = []
-
-    for path, img, mask, ground in data:
-        img = 255 - img[:, :, 1]
-
-        line_str = op(path, img, mask, size)
-        line_str = gray_norm(line_str, mask)
-        bin = cv2.threshold(line_str, thresh, 255, cv2.THRESH_BINARY)[1]
-
-        optic = cached_optic_norm(path, img, mask, size)
-        optic = cv2.threshold(optic, optic_thresh, 255, cv2.THRESH_BINARY)[1]
-        optic = cv2.erode(optic, np.ones((3, 3), np.uint8), iterations=1)
-        bin[optic == 255] = 0
-
-        bin_fov = bin[mask == 255]
-        ground_fov = ground[mask == 255]
-        acc = accuracy(bin_fov, ground_fov)
-
-        acc_list.append(acc)
-
-    return np.mean(acc_list)

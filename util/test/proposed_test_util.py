@@ -44,6 +44,7 @@ def proposed_train(op, thresh, optic_thresh, data, size):
             # return
 
         avg_acc = np.mean(acc_list)
+
         avg_acc_list.append(avg_acc)
 
     best = np.argmax(avg_acc_list)
@@ -51,7 +52,7 @@ def proposed_train(op, thresh, optic_thresh, data, size):
     return best + 1, avg_acc_list[best]
 
 
-def proposed_get_acc(op, data, thresh, optic_thresh, proposed_thresh):
+def proposed_test(op, data, thresh, optic_thresh, proposed_thresh):
     size = 15
     acc_list = []
 
@@ -65,6 +66,7 @@ def proposed_get_acc(op, data, thresh, optic_thresh, proposed_thresh):
         optic = cached_optic_norm(path, img, mask, size)
         optic = cv2.threshold(optic, optic_thresh, 255, cv2.THRESH_BINARY)[1]
         optic = cv2.erode(optic, np.ones((3, 3), np.uint8), iterations=1)
+        bin[optic == 255] = 0
 
         min_window = proposed_norm(path, img, mask, size)
         min_window = cv2.threshold(min_window, proposed_thresh, 255, cv2.THRESH_BINARY)[1]

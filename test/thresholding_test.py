@@ -2,9 +2,9 @@ from dataset.DriveDatasetLoader import DriveDatasetLoader
 from methods.multi_line_opr import cached_multi_norm, cached_multi
 from methods.single_line_opr import cached_single, cached_single_norm
 from util.print_color import *
-from util.test.basic_test_util import basic_train, basic_get_acc, basic_calc_auc, basic_test_each
-from util.test.optic_test_util import optic_train, optic_test_each, optic_get_acc
-from util.test.proposed_test_util import proposed_train, proposed_get_acc
+from util.test.basic_test_util import basic_train, basic_test, basic_calc_auc, basic_test_each
+from util.test.optic_test_util import optic_train, optic_test_each, optic_test
+from util.test.proposed_test_util import proposed_train, proposed_test
 from util.timer import Timer
 
 
@@ -24,7 +24,7 @@ def basic_training():
     timer.stop()
 
     timer.start('Test')
-    test_acc = basic_get_acc(op, test_data, thresh, size)
+    test_acc = basic_test(op, test_data, thresh, size)
     timer.stop()
 
     green(f'Threshold: {thresh}')
@@ -74,7 +74,7 @@ def optic_training():
     timer.stop()
 
     timer.start('Test')
-    test_acc = optic_get_acc(op, test_data, thresh, disk_thresh)
+    test_acc = optic_test(op, test_data, thresh, disk_thresh)
     timer.stop()
 
     blue(f'Disk threshold: {disk_thresh}')
@@ -118,7 +118,7 @@ def proposed_training():
     timer.stop()
 
     timer.start('Test')
-    test_acc = proposed_get_acc(op, test_data, thresh, optic_thresh, proposed_thresh)
+    test_acc = proposed_test(op, test_data, thresh, optic_thresh, proposed_thresh)
     timer.stop()
 
     blue(f'Proposed threshold: {proposed_thresh}')
@@ -131,4 +131,4 @@ def proposed_each():
 
 
 if __name__ == '__main__':
-    basic_each()
+    proposed_training()
