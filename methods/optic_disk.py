@@ -31,7 +31,7 @@ def cached_optic(path, img, mask, size):
         binary_file = open(file_path, mode='rb')
         line_strength = pickle.load(binary_file)
     else:
-        line_strength = disk(img, mask, size)
+        line_strength = optic(img, mask, size)
         binary_file = open(file_path, mode='wb')
 
         pickle.dump(line_strength, binary_file)
@@ -41,7 +41,7 @@ def cached_optic(path, img, mask, size):
     return line_strength
 
 
-def disk(img, mask, size):
+def optic(img, mask, size):
     img = img.astype(np.int16)
     bool_mask = mask.astype(np.bool)
     lines, wings = line_factory.generate_lines(size)
@@ -50,7 +50,7 @@ def disk(img, mask, size):
     cpu_count = psutil.cpu_count()
 
     processes = [
-        mp.Process(target=disk_worker, args=(img, bool_mask, lines, wings, queue, cpu_count, cpu_id))
+        mp.Process(target=optic_worker, args=(img, bool_mask, lines, wings, queue, cpu_count, cpu_id))
         for cpu_id in range(cpu_count)]
 
     for p in processes:
@@ -70,7 +70,7 @@ def disk(img, mask, size):
     return result
 
 
-def disk_worker(img, bool_mask, lines, wings, queue, cpu_count, cpu_id):
+def optic_worker(img, bool_mask, lines, wings, queue, cpu_count, cpu_id):
     h, w = img.shape[:2]
     slice_height = h // cpu_count
     y_start = cpu_id * slice_height
