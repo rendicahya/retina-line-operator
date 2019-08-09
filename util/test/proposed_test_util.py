@@ -92,4 +92,42 @@ def proposed_test_each(op, data, size):
         line_str = op(path, img, mask, size)
         line_str_norm = gray_norm(line_str, mask)
         bin = find_best_thresh(line_str_norm, ground, mask)[1]
+
         temp_acc = []
+
+        for optic_thresh in range(1, 255):
+            optic = cached_optic_norm(path, img, mask, size)
+            optic = cv2.threshold(optic, optic_thresh, 255, cv2.THRESH_BINARY)[1]
+            optic = cv2.erode(optic, np.ones((3, 3), np.uint8), iterations=1)
+
+            bin_subtract = bin.copy()
+            bin_subtract[optic == 255] = 0
+            acc = accuracy(ground, bin_subtract)
+
+            temp_acc.append(acc)
+
+        best_optic_thresh = np.argmax(temp_acc) + 1
+
+        optic = cached_optic_norm(path, img, mask, size)
+        optic = cv2.threshold(optic, best_optic_thresh, 255, cv2.THRESH_BINARY)[1]
+        optic = cv2.erode(optic, np.ones((3, 3), np.uint8), iterations=1)
+
+        temp_acc = []
+
+        for proposed_thresh in range(1, 255):
+            min_window = proposed_norm(path, img, mask, size)
+            min_window = cv2.threshold(min_window, proposed_thresh, 255, cv2.THRESH_BINARY)[1]
+
+            bin_subtract = bin.copy()
+            bin_subtract[optic == 255] = 0
+            bin_subtract[min_window == 255] = 0
+
+            acc = accuracy(ground, bin_subtract)
+
+            temp_acc.append(acc)
+
+        best_acc = np.max(temp_acc)
+
+        acc_list.append(best_acc)
+
+    return np.mean(acc_list)
