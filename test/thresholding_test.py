@@ -1,14 +1,14 @@
 from dataset.DriveDatasetLoader import DriveDatasetLoader
 from methods.multi_line_opr import cached_multi_norm, cached_multi
 from methods.single_line_opr import cached_single, cached_single_norm
+from util.basic_test_util import basic_train, get_accuracy, calc_auc, basic_test_each
 from util.print_color import *
-from util.test.optic_test_util import train_optic, find_best_acc_optic_each, get_accuracy_optic
-from util.test.proposed_test_util import find_best_acc_proposed, get_accuracy_proposed
-from util.test_util import find_best_acc, get_accuracy, calc_auc, find_best_acc_each
+from util.test.optic_test_util import optic_train, optic_test_each, get_accuracy_optic
+from util.test.proposed_test_util import train_proposed, get_accuracy_proposed
 from util.timer import Timer
 
 
-def line_training():
+def basic_training():
     train_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
     test_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
 
@@ -18,9 +18,9 @@ def line_training():
     size = 15
     timer = Timer()
 
-    green('line_with_training')
+    green('basic_training')
     timer.start('Train')
-    thresh, train_acc = find_best_acc(op, train_data, size)
+    thresh, train_acc = basic_train(op, train_data, size)
     train_auc = calc_auc(train_data, op, size)
     timer.stop()
 
@@ -40,7 +40,7 @@ def line_training():
     # cv2.destroyAllWindows()
 
 
-def line_each():
+def basic_each():
     data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
     # data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
 
@@ -51,7 +51,7 @@ def line_each():
     timer = Timer()
 
     timer.start('line_no_training')
-    acc = find_best_acc_each(op, data, size)
+    acc = basic_test_each(op, data, size)
     timer.stop()
 
     green(f'Test average accuracy: {acc}')
@@ -70,9 +70,9 @@ def optic_training():
     size = 15
     timer = Timer()
 
-    green('optic_with_training')
+    green('optic_training')
     timer.start('Train')
-    disk_thresh, train_acc = train_optic(op, thresh, train_data, size)
+    disk_thresh, train_acc = optic_train(op, thresh, train_data, size)
     timer.stop()
 
     timer.start('Test')
@@ -95,7 +95,7 @@ def optic_each():
     timer = Timer()
 
     timer.start('optic_no_training')
-    acc, auc = find_best_acc_optic_each(op, data, size)
+    acc, auc = optic_test_each(op, data, size)
     timer.stop()
 
     green(f'Test average accuracy: {acc}')
@@ -116,7 +116,7 @@ def proposed_training():
 
     green('proposed_with_training')
     timer.start('Train')
-    proposed_thresh, train_acc = find_best_acc_proposed(op, thresh, optic_thresh, train_data, size)
+    proposed_thresh, train_acc = train_proposed(op, thresh, optic_thresh, train_data, size)
     timer.stop()
 
     timer.start('Test')

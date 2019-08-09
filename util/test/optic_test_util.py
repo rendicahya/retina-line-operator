@@ -6,7 +6,7 @@ from util.data_util import accuracy, auc_score
 from util.image_util import gray_norm, find_best_thresh
 
 
-def train_optic(op, thresh, data, size):
+def optic_train(op, thresh, data, size):
     avg_acc_list = []
 
     for disk_thresh in range(1, 255):
@@ -39,7 +39,7 @@ def train_optic(op, thresh, data, size):
     return best + 1, avg_acc_list[best]
 
 
-def find_best_acc_optic_each(op, data, size):
+def optic_test_each(op, data, size):
     acc_list = []
     auc_list = []
 

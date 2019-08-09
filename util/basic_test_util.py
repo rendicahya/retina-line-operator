@@ -5,7 +5,7 @@ from util.data_util import auc_score, accuracy
 from util.image_util import find_best_thresh
 
 
-def find_best_acc(op, data, size):
+def basic_train(op, data, size):
     avg_acc_list = []
 
     for thresh in range(1, 255):
@@ -29,7 +29,7 @@ def find_best_acc(op, data, size):
     return best + 1, avg_acc_list[best]
 
 
-def find_best_acc_each(op, data, size):
+def basic_test_each(op, data, size):
     acc_list = []
 
     for path, img, mask, ground in data:
