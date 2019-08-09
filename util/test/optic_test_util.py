@@ -9,14 +9,14 @@ from util.image_util import gray_norm, find_best_thresh
 def optic_train(op, thresh, data, size):
     avg_acc_list = []
 
-    for disk_thresh in range(1, 255):
+    for optic_thresh in range(1, 255):
         acc_list = []
 
         for path, img, mask, ground in data:
             img = 255 - img[:, :, 1]
 
             optic = cached_disk_norm(path, img, mask, size)
-            optic = cv2.threshold(optic, disk_thresh, 255, cv2.THRESH_BINARY)[1]
+            optic = cv2.threshold(optic, optic_thresh, 255, cv2.THRESH_BINARY)[1]
             optic = cv2.erode(optic, np.ones((3, 3), np.uint8), iterations=1)
 
             line_str = op(path, img, mask, size)
@@ -51,9 +51,9 @@ def optic_test_each(op, data, size):
         bin = find_best_thresh(line_str_norm, ground, mask)[1]
         temp_acc = []
 
-        for disk_thresh in range(1, 255):
+        for optic_thresh in range(1, 255):
             optic = cached_disk_norm(path, img, mask, size)
-            optic = cv2.threshold(optic, disk_thresh, 255, cv2.THRESH_BINARY)[1]
+            optic = cv2.threshold(optic, optic_thresh, 255, cv2.THRESH_BINARY)[1]
             optic = cv2.erode(optic, np.ones((3, 3), np.uint8), iterations=1)
             bin_subtract = bin.copy()
 
@@ -77,7 +77,7 @@ def optic_test_each(op, data, size):
     return np.mean(acc_list), np.mean(auc_list)
 
 
-def optic_get_acc(op, data, thresh, disk_thresh):
+def optic_get_acc(op, data, thresh, optic_thresh):
     size = 15
     acc_list = []
 
@@ -89,7 +89,7 @@ def optic_get_acc(op, data, thresh, disk_thresh):
         bin = cv2.threshold(line_str, thresh, 255, cv2.THRESH_BINARY)[1]
 
         optic = cached_disk_norm(path, img, mask, size)
-        optic = cv2.threshold(optic, disk_thresh, 255, cv2.THRESH_BINARY)[1]
+        optic = cv2.threshold(optic, optic_thresh, 255, cv2.THRESH_BINARY)[1]
         optic = cv2.erode(optic, np.ones((3, 3), np.uint8), iterations=1)
         bin[optic == 255] = 0
 
