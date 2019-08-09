@@ -1,4 +1,4 @@
-                            Single training     Multi training      Single no training  Multi no training
+                            Single training     Multi training      Single each         Multi each
 
 Basic       Train acc.      0.916151059184999   0.9053773947330853  0.9320052951830796  0.9393863856069318
                   AUC       0.9616026500320016  0.9554629297032269  idem                idem

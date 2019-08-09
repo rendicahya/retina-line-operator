@@ -2,13 +2,13 @@ from dataset.DriveDatasetLoader import DriveDatasetLoader
 from methods.multi_line_opr import cached_multi_norm, cached_multi
 from methods.single_line_opr import cached_single, cached_single_norm
 from util.print_color import *
-from util.test.optic_test_util import find_best_acc_optic, find_best_acc_optic_each, get_accuracy_optic
+from util.test.optic_test_util import train_optic, find_best_acc_optic_each, get_accuracy_optic
 from util.test.proposed_test_util import find_best_acc_proposed, get_accuracy_proposed
 from util.test_util import find_best_acc, get_accuracy, calc_auc, find_best_acc_each
 from util.timer import Timer
 
 
-def line_with_training():
+def line_training():
     train_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
     test_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
 
@@ -40,7 +40,7 @@ def line_with_training():
     # cv2.destroyAllWindows()
 
 
-def line_no_training():
+def line_each():
     data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
     # data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
 
@@ -57,7 +57,7 @@ def line_no_training():
     green(f'Test average accuracy: {acc}')
 
 
-def optic_with_training():
+def optic_training():
     train_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
     test_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
 
@@ -72,7 +72,7 @@ def optic_with_training():
 
     green('optic_with_training')
     timer.start('Train')
-    disk_thresh, train_acc = find_best_acc_optic(op, thresh, train_data, size)
+    disk_thresh, train_acc = train_optic(op, thresh, train_data, size)
     timer.stop()
 
     timer.start('Test')
@@ -84,7 +84,7 @@ def optic_with_training():
     blue(f'Test average accuracy: {test_acc}')
 
 
-def optic_no_training():
+def optic_each():
     # data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
     data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
 
@@ -102,7 +102,7 @@ def optic_no_training():
     green(f'Test average AUC: {auc}')
 
 
-def proposed_with_training():
+def proposed_training():
     train_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
     test_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
 
@@ -128,9 +128,9 @@ def proposed_with_training():
     blue(f'Test accuracy: {test_acc}')
 
 
-def proposed_no_training():
+def proposed_each():
     pass
 
 
 if __name__ == '__main__':
-    proposed_with_training()
+    proposed_training()
