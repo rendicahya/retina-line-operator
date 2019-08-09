@@ -2,8 +2,9 @@ from dataset.DriveDatasetLoader import DriveDatasetLoader
 from methods.multi_line_opr import cached_multi_norm, cached_multi
 from methods.single_line_opr import cached_single, cached_single_norm
 from util.print_color import *
-from util.test_util import find_best_acc, get_accuracy, find_best_acc_optic, find_best_acc_proposed, get_accuracy_optic, \
-    get_accuracy_proposed, calc_auc, find_best_acc_each, find_best_acc_optic_each
+from util.test.optic_test_util import find_best_acc_optic, find_best_acc_optic_each, get_accuracy_optic
+from util.test.proposed_test_util import find_best_acc_proposed, get_accuracy_proposed
+from util.test_util import find_best_acc, get_accuracy, calc_auc, find_best_acc_each
 from util.timer import Timer
 
 
