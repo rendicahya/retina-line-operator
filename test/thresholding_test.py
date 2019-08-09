@@ -1,10 +1,10 @@
 from dataset.DriveDatasetLoader import DriveDatasetLoader
 from methods.multi_line_opr import cached_multi_norm, cached_multi
 from methods.single_line_opr import cached_single, cached_single_norm
-from test.util.basic_test_util import basic_train, basic_get_acc, basic_calc_auc, basic_test_each
-from test.util.optic_test_util import optic_train, optic_test_each, optic_get_acc
-from test.util.proposed_test_util import proposed_train, proposed_get_acc
 from util.print_color import *
+from util.test.basic_test_util import basic_train, basic_get_acc, basic_calc_auc, basic_test_each
+from util.test.optic_test_util import optic_train, optic_test_each, optic_get_acc
+from util.test.proposed_test_util import proposed_train, proposed_get_acc
 from util.timer import Timer
 
 
@@ -21,19 +21,19 @@ def basic_training():
     green('basic_training')
     timer.start('Train')
     thresh, train_acc = basic_train(op, train_data, size)
-    train_auc = basic_calc_auc(train_data, op, size)
+    # train_auc = basic_calc_auc(train_data, op, size)
     timer.stop()
 
     timer.start('Test')
     test_acc = basic_get_acc(op, test_data, thresh, size)
-    test_auc = basic_calc_auc(test_data, op, size)
+    # test_auc = basic_calc_auc(test_data, op, size)
     timer.stop()
 
     green(f'Threshold: {thresh}')
     green(f'Train average accuracy: {train_acc}')
-    green(f'Train average AUC: {train_auc}')
+    # green(f'Train average AUC: {train_auc}')
     green(f'Test average accuracy: {test_acc}')
-    green(f'Test average AUC: {test_auc}')
+    # green(f'Test average AUC: {test_auc}')
 
     # cv2.imshow('Image', linestr)
     # cv2.waitKey(0)
@@ -50,11 +50,13 @@ def basic_each():
     size = 15
     timer = Timer()
 
-    timer.start('line_no_training')
+    timer.start('basic_each')
     acc = basic_test_each(op, data, size)
+    auc = basic_calc_auc(data, op, size)
     timer.stop()
 
-    green(f'Test average accuracy: {acc}')
+    green(f'Accuracy: {acc}')
+    green(f'AUC: {auc}')
 
 
 def optic_training():
@@ -133,4 +135,4 @@ def proposed_each():
 
 
 if __name__ == '__main__':
-    proposed_training()
+    basic_training()
