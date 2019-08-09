@@ -9,18 +9,17 @@ import psutil
 
 from dataset.DriveDatasetLoader import DriveDatasetLoader
 from methods import line_factory
-# from methods.multi_line_opr import cached_multi
 from util.image_util import gray_norm
 from util.timer import Timer
 
 
-def cached_disk_norm(path, img, mask, size):
-    disk = cached_disk(path, img, mask, size)
+def cached_optic_norm(path, img, mask, size):
+    optic = cached_optic(path, img, mask, size)
 
-    return gray_norm(disk, mask)
+    return gray_norm(optic, mask)
 
 
-def cached_disk(path, img, mask, size):
+def cached_optic(path, img, mask, size):
     cache_dir = os.path.dirname(path) + '/cache'
 
     if not os.path.exists(cache_dir):
@@ -124,7 +123,7 @@ def save_cache():
         img = 255 - img[:, :, 1]
 
         timer.start(path)
-        cached_disk(path, img, mask, size)
+        cached_optic(path, img, mask, size)
         timer.stop()
 
 

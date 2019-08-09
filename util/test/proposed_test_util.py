@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-from methods.optic_disk import cached_disk_norm
+from methods.optic_disk import cached_optic_norm
 from methods.proposed import proposed_norm
 from util.data_util import accuracy
 from util.image_util import gray_norm
@@ -20,7 +20,7 @@ def proposed_train(op, thresh, optic_thresh, data, size):
             line_str = gray_norm(line_str, mask)
             bin = cv2.threshold(line_str, thresh, 255, cv2.THRESH_BINARY)[1]
 
-            optic = cached_disk_norm(path, img, mask, size)
+            optic = cached_optic_norm(path, img, mask, size)
             optic = cv2.threshold(optic, optic_thresh, 255, cv2.THRESH_BINARY)[1]
             optic = cv2.erode(optic, np.ones((3, 3), np.uint8), iterations=1)
             bin[optic == 255] = 0
@@ -62,7 +62,7 @@ def proposed_get_acc(op, data, thresh, optic_thresh, proposed_thresh):
         line_str = gray_norm(line_str, mask)
         bin = cv2.threshold(line_str, thresh, 255, cv2.THRESH_BINARY)[1]
 
-        optic = cached_disk_norm(path, img, mask, size)
+        optic = cached_optic_norm(path, img, mask, size)
         optic = cv2.threshold(optic, optic_thresh, 255, cv2.THRESH_BINARY)[1]
         optic = cv2.erode(optic, np.ones((3, 3), np.uint8), iterations=1)
 

@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-from methods.optic_disk import cached_disk_norm
+from methods.optic_disk import cached_optic_norm
 from util.data_util import accuracy, auc_score
 from util.image_util import gray_norm, find_best_thresh
 
@@ -15,7 +15,7 @@ def optic_train(op, thresh, data, size):
         for path, img, mask, ground in data:
             img = 255 - img[:, :, 1]
 
-            optic = cached_disk_norm(path, img, mask, size)
+            optic = cached_optic_norm(path, img, mask, size)
             optic = cv2.threshold(optic, optic_thresh, 255, cv2.THRESH_BINARY)[1]
             optic = cv2.erode(optic, np.ones((3, 3), np.uint8), iterations=1)
 
@@ -52,7 +52,7 @@ def optic_test_each(op, data, size):
         temp_acc = []
 
         for optic_thresh in range(1, 255):
-            optic = cached_disk_norm(path, img, mask, size)
+            optic = cached_optic_norm(path, img, mask, size)
             optic = cv2.threshold(optic, optic_thresh, 255, cv2.THRESH_BINARY)[1]
             optic = cv2.erode(optic, np.ones((3, 3), np.uint8), iterations=1)
             bin_subtract = bin.copy()
@@ -65,7 +65,7 @@ def optic_test_each(op, data, size):
         best_acc = np.max(temp_acc)
 
         best_disk_thresh = np.argmax(temp_acc) + 1
-        optic = cached_disk_norm(path, img, mask, size)
+        optic = cached_optic_norm(path, img, mask, size)
         optic = cv2.threshold(optic, best_disk_thresh, 255, cv2.THRESH_BINARY)[1]
         optic = cv2.erode(optic, np.ones((3, 3), np.uint8), iterations=1)
         line_str[optic == 255] = line_str.min()
@@ -88,7 +88,7 @@ def optic_get_acc(op, data, thresh, optic_thresh):
         line_str = gray_norm(line_str, mask)
         bin = cv2.threshold(line_str, thresh, 255, cv2.THRESH_BINARY)[1]
 
-        optic = cached_disk_norm(path, img, mask, size)
+        optic = cached_optic_norm(path, img, mask, size)
         optic = cv2.threshold(optic, optic_thresh, 255, cv2.THRESH_BINARY)[1]
         optic = cv2.erode(optic, np.ones((3, 3), np.uint8), iterations=1)
         bin[optic == 255] = 0
