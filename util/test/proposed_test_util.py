@@ -7,7 +7,7 @@ from util.data_util import accuracy
 from util.image_util import gray_norm
 
 
-def train_proposed(op, thresh, optic_thresh, data, size):
+def proposed_train(op, thresh, optic_thresh, data, size):
     avg_acc_list = []
 
     for proposed_thresh in range(1, 255):
@@ -51,7 +51,7 @@ def train_proposed(op, thresh, optic_thresh, data, size):
     return best + 1, avg_acc_list[best]
 
 
-def get_accuracy_proposed(op, data, thresh, optic_thresh, proposed_thresh):
+def proposed_get_acc(op, data, thresh, optic_thresh, proposed_thresh):
     size = 15
     acc_list = []
 

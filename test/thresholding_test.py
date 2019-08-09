@@ -4,7 +4,7 @@ from methods.single_line_opr import cached_single, cached_single_norm
 from util.basic_test_util import basic_train, basic_get_acc, calc_auc, basic_test_each
 from util.print_color import *
 from util.test.optic_test_util import optic_train, optic_test_each, optic_get_acc
-from util.test.proposed_test_util import train_proposed, get_accuracy_proposed
+from util.test.proposed_test_util import proposed_train, proposed_get_acc
 from util.timer import Timer
 
 
@@ -116,11 +116,11 @@ def proposed_training():
 
     green('proposed_with_training')
     timer.start('Train')
-    proposed_thresh, train_acc = train_proposed(op, thresh, optic_thresh, train_data, size)
+    proposed_thresh, train_acc = proposed_train(op, thresh, optic_thresh, train_data, size)
     timer.stop()
 
     timer.start('Test')
-    test_acc = get_accuracy_proposed(op, test_data, thresh, optic_thresh, proposed_thresh)
+    test_acc = proposed_get_acc(op, test_data, thresh, optic_thresh, proposed_thresh)
     timer.stop()
 
     blue(f'Proposed threshold: {proposed_thresh}')
