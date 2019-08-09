@@ -1,6 +1,6 @@
 from dataset.DriveDatasetLoader import DriveDatasetLoader
 from methods.multi_line_opr import cached_multi_norm, cached_multi
-from methods.single_line_opr import cached_single
+from methods.single_line_opr import cached_single, cached_single_norm
 from util.print_color import *
 from util.test.basic_test_util import basic_train, basic_get_acc, basic_calc_auc, basic_test_each
 from util.test.optic_test_util import optic_train, optic_test_each, optic_get_acc
@@ -37,11 +37,11 @@ def basic_training():
 
 
 def basic_each():
-    # data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
-    data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
+    data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
+    # data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
 
-    # op = cached_single_norm
-    op = cached_multi_norm
+    op = cached_single_norm
+    # op = cached_multi_norm
 
     size = 15
     timer = Timer()
