@@ -54,7 +54,7 @@ def calc_auc(data, op, size):
     return np.mean(auc_list)
 
 
-def get_accuracy(op, data, thresh, size):
+def basic_get_acc(op, data, thresh, size):
     acc_list = []
 
     for path, img, mask, ground in data:

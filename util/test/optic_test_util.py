@@ -77,7 +77,7 @@ def optic_test_each(op, data, size):
     return np.mean(acc_list), np.mean(auc_list)
 
 
-def get_accuracy_optic(op, data, thresh, disk_thresh):
+def optic_get_acc(op, data, thresh, disk_thresh):
     size = 15
     acc_list = []
 
