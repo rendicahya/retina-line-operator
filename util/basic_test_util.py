@@ -42,18 +42,6 @@ def basic_test_each(op, data, size):
     return np.mean(acc_list)
 
 
-def calc_auc(data, op, size):
-    auc_list = []
-
-    for path, img, mask, ground in data:
-        line_str = op(path, img, mask, size)
-        auc = auc_score(ground, line_str, mask)
-
-        auc_list.append(auc)
-
-    return np.mean(auc_list)
-
-
 def basic_get_acc(op, data, thresh, size):
     acc_list = []
 
@@ -70,3 +58,13 @@ def basic_get_acc(op, data, thresh, size):
     return np.mean(acc_list)
 
 
+def basic_calc_auc(data, op, size):
+    auc_list = []
+
+    for path, img, mask, ground in data:
+        line_str = op(path, img, mask, size)
+        auc = auc_score(ground, line_str, mask)
+
+        auc_list.append(auc)
+
+    return np.mean(auc_list)
