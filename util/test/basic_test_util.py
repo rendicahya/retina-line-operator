@@ -47,24 +47,15 @@ def basic_test(op, data, thresh, size):
 
 def basic_test_each(op, data, size):
     acc_list = []
+    auc_list = []
 
     for path, img, mask, ground in data:
         img = 255 - img[:, :, 1]
         line_str = op(path, img, mask, size)
         thresh, bin, acc = find_best_thresh(line_str, ground, mask)
-
-        acc_list.append(acc)
-
-    return np.mean(acc_list)
-
-
-def basic_calc_auc(data, op, size):
-    auc_list = []
-
-    for path, img, mask, ground in data:
-        line_str = op(path, img, mask, size)
         auc = auc_score(ground, line_str, mask)
 
+        acc_list.append(acc)
         auc_list.append(auc)
 
-    return np.mean(auc_list)
+    return np.mean(acc_list), np.mean(auc_list)

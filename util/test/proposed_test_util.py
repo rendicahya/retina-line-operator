@@ -4,6 +4,7 @@ import numpy as np
 from methods.optic_disk import cached_optic_norm
 from methods.proposed import proposed_norm
 from util.data_util import accuracy
+from util.image_util import find_best_thresh
 from util.image_util import gray_norm
 
 
@@ -79,3 +80,16 @@ def proposed_test(op, data, thresh, optic_thresh, proposed_thresh):
         acc_list.append(acc)
 
     return np.mean(acc_list)
+
+
+def proposed_test_each(op, data, size):
+    acc_list = []
+    auc_list = []
+
+    for path, img, mask, ground in data:
+        img = 255 - img[:, :, 1]
+
+        line_str = op(path, img, mask, size)
+        line_str_norm = gray_norm(line_str, mask)
+        bin = find_best_thresh(line_str_norm, ground, mask)[1]
+        temp_acc = []
