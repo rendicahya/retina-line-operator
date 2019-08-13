@@ -1,10 +1,10 @@
 from dataset.DriveDatasetLoader import DriveDatasetLoader
 from methods.multi_line_opr import cached_multi_norm, cached_multi
-from methods.single_line_opr import cached_single_norm
+from methods.single_line_opr import cached_single_norm, cached_single
 from util.print_color import *
 from util.test.basic_test_util import basic_train, basic_test, basic_test_each
 from util.test.optic_test_util import optic_train, optic_test_each, optic_test
-from util.test.proposed_test_util import proposed_train, proposed_test
+from util.test.proposed_test_util import proposed_train, proposed_test, proposed_test_each
 from util.timer import Timer
 
 
@@ -129,8 +129,22 @@ def proposed_training():
 
 
 def proposed_each():
-    pass
+    # data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
+    data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
+
+    # op = cached_single
+    op = cached_multi
+
+    size = 15
+    timer = Timer()
+
+    timer.start('optic_each')
+    acc = proposed_test_each(op, data, size)
+    timer.stop()
+
+    green(f'Accuracy: {acc}')
+    # green(f'Test average AUC: {auc}')
 
 
 if __name__ == '__main__':
-    proposed_training()
+    proposed_each()
