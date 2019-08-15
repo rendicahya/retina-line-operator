@@ -69,11 +69,12 @@ def main():
     print('Thresh:', thresh)
 
     cv2.imshow('Image', img)
-    cv2.imshow('Multi', gray_norm(line_str, mask))
+    cv2.imshow('Multi', 255 - gray_norm(line_str, mask))
     cv2.imshow('Binary', bin)
     cv2.imshow('Ground truth', ground)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+    # cv2.imwrite(r'C:\Users\Randy Cahya Wihandik\Desktop\multi.png', 255 - gray_norm(line_str, mask))
 
 
 if __name__ == '__main__':
