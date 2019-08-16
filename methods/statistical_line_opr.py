@@ -2,14 +2,13 @@ import multiprocessing as mp
 import os.path
 import pickle
 
-import cv2
 import numpy as np
 import psutil
 
 from dataset.DriveDatasetLoader import DriveDatasetLoader
 from methods.line_factory import generate_lines
 from methods.window_average import cached_integral
-from util.image_util import subtract_line_str, gray_norm
+from util.image_util import subtract_line_str
 from util.timer import Timer
 
 
@@ -113,25 +112,55 @@ def save_cache():
 
 
 def main():
-    path, img, mask, ground = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training_one(1)
+    path, img, mask, ground = DriveDatasetLoader('D:/Google Drive/Datasets/DRIVE', 10).load_training_one(1)
 
     img = 255 - img[:, :, 1]
     size = 15
 
     window = cached_integral(path, img, mask, size)
     stat = cached_statistics(path, img, mask, size)
-    min_window = gray_norm(subtract_line_str(stat['min'], window, mask), mask)
+    min_window = subtract_line_str(stat['min'], window, mask)
+    # min_window = gray_norm(min_window, mask)
     # min_window = 255 - cv2.threshold(min_window, 138, 255, cv2.THRESH_BINARY)[1]
-    min_window[mask == 0] = 0
-    img[min_window == 255] = 255
-    img[mask == 0] = 255
+    # min_window[mask == 0] = 0
+    # img[min_window == 255] = 255
+    # img[mask == 0] = 255
 
-    cv2.imshow('Image', img)
-    cv2.imshow('Min-window', min_window)
-    cv2.imshow('Ground', ground)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-    # cv2.imwrite(r'C:\Users\Randy Cahya Wihandik\Desktop\min-minus-window.png', img)
+    print(np.min(min_window[mask == 255]))
+    print(np.max(min_window[mask == 255]))
+
+    # cv2.imshow('Image', img)
+    # cv2.imshow('Min-window', min_window)
+    # cv2.imshow('Ground', ground)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+    # cv2.imwrite(r'C:\Users\rendi\OneDrive\Desktop\min-minus-window-2.png', min_window)
+
+
+def investigate():
+    path, img, mask, ground = DriveDatasetLoader('D:/Google Drive/Datasets/DRIVE', 10).load_training_one(1)
+
+    img = 255 - img[:, :, 1]
+    size = 15
+
+    window = cached_integral(path, img, mask, size)
+    stat = cached_statistics(path, img, mask, size)
+    mi = stat['min']
+    a = 189, 149
+    b = 179, 265
+    c = 131, 170
+
+    print('Condition a')
+    print(mi[a])
+    print(window[a])
+
+    print('Condition b')
+    print(mi[b])
+    print(window[b])
+
+    print('Condition c')
+    print(mi[c])
+    print(window[c])
 
 
 if __name__ == '__main__':
