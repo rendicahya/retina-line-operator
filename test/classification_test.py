@@ -5,13 +5,13 @@ from sklearn.metrics import accuracy_score
 
 from classification.FeatureExtractor import FeatureExtractor
 from dataset.DriveDatasetLoader import DriveDatasetLoader
-from util.print_color import blue
+from util.print_color import *
 from util.timer import Timer
 
 
-def proposed():
+def main():
     drive = DriveDatasetLoader('D:/Datasets/DRIVE', 10)
-    N_FEATURES = 1000
+    n_points = 2000
     all_fg_feat = None
     all_bg_feat = None
     size = 15
@@ -19,9 +19,9 @@ def proposed():
 
     timer.start('Feature extraction')
 
-    for path, img, mask, ground_truth in drive.load_train():
+    for path, img, mask, ground in drive.load_train():
         img = 255 - img[:, :, 1]
-        feat_extractor = FeatureExtractor(img, mask, path, size, ground_truth, N_FEATURES)
+        feat_extractor = FeatureExtractor(img, mask, path, size, ground, n_points)
 
         pixel_feat_fg, pixel_feat_bg = feat_extractor.get_pixel_feat()
         single_fg, single_bg = feat_extractor.get_single_feat()
@@ -46,7 +46,7 @@ def proposed():
 
     timer.stop()
 
-    target = np.append(np.repeat(1, N_FEATURES * 20), np.repeat(0, N_FEATURES * 20))
+    target = np.append(np.repeat(1, n_points // 2 * 20), np.repeat(0, n_points // 2 * 20))
     classifier = svm.SVC()
     # classifier = RandomForestClassifier(n_estimators=100, criterion='entropy', max_features='sqrt', random_state=0,
     #                                     n_jobs=-1)
@@ -54,9 +54,12 @@ def proposed():
     timer.start('Training')
     classifier.fit(all_feats, target)
     timer.stop()
-    timer.start('Predict')
 
-    for path, img, mask, ground_truth in drive.load_test():
+    acc_list = []
+    acc_fov_list = []
+
+    for path, img, mask, ground in drive.load_test():
+        # timer.start(f'Predict {path}')
         img = 255 - img[:, :, 1]
         feat_extractor = FeatureExtractor(img, mask, path, size)
 
@@ -73,20 +76,33 @@ def proposed():
         result = classifier.predict(all_feats)
 
         result[result == 1] = 255
-        result_image = np.zeros(mask.shape, np.float64)
-        result_image[mask == 255] = result
+        result_img = np.zeros(mask.shape, np.float64)
+        result_img[mask == 255] = result
 
-        blue('Accuracy: %f' % accuracy_score(result_image.ravel(), ground_truth.ravel()))
-        blue('Accuracy FOV: %f' % accuracy_score(result, ground_truth[mask == 255].ravel()))
+        acc = accuracy_score(result_img.ravel(), ground.ravel())
+        acc_fov = accuracy_score(result, ground[mask == 255].ravel())
 
-        # cv2.imshow('Image', img)
-        cv2.imshow('Segmentation', result_image)
-        cv2.imshow('Ground truth', ground_truth)
-        # cv2.imwrite('C:/Users/Randy Cahya Wihandik/Desktop/segmentation.jpg', result_image)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-    timer.stop()
+        acc_list.append(acc)
+        acc_fov_list.append(acc_fov)
+
+        # timer.stop()
+        # green(f'Accuracy: {acc}')
+        # green(f'Accuracy FOV: {acc_fov}')
+
+        green(acc, ' ')
+        green(acc_fov)
+
+        # cv2.imshow(f'Image {path}', img)
+        # cv2.imshow(f'Segmentation {path}', result_img)
+        # cv2.imshow(f'Ground truth {path}', ground)
+        # cv2.imwrite('C:/Users/Randy Cahya Wihandik/Desktop/segmentation.jpg', result_img)
+
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+
+    yellow('Average accuracy: %f' % np.mean(acc_list))
+    yellow('Average FOV accuracy: %f' % np.mean(acc_fov_list))
 
 
 if __name__ == '__main__':
-    proposed()
+    main()

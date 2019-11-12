@@ -10,23 +10,23 @@ class FeatureExtractor:
     selected_fg_idx = None
     selected_bg_idx = None
 
-    def __init__(self, image, mask, path, size, ground=None, n_features=None):
+    def __init__(self, image, mask, path, size, ground=None, n_points=None):
         self.image = image
         self.mask = mask
         self.path = path
         self.size = size
 
-        if ground is not None and n_features is not None:
+        if ground is not None and n_points is not None:
             np.random.seed(0)
 
             all_fg_idx = np.argwhere(ground == 255)
-            rand_fg_idx = np.random.choice(all_fg_idx.shape[0], n_features // 2, False)
+            rand_fg_idx = np.random.choice(all_fg_idx.shape[0], n_points // 2, False)
             selected_fg_idx = all_fg_idx[rand_fg_idx]
 
             np.random.seed(1)
 
             all_bg_idx = np.argwhere(ground == 0)
-            rand_bg_idx = np.random.choice(all_bg_idx.shape[0], n_features // 2, False)
+            rand_bg_idx = np.random.choice(all_bg_idx.shape[0], n_points // 2, False)
             selected_bg_idx = all_bg_idx[rand_bg_idx]
 
             self.selected_fg_idx = tuple(selected_fg_idx.T)
@@ -39,11 +39,11 @@ class FeatureExtractor:
         if self.selected_fg_idx is None or self.selected_bg_idx is None:
             return norm_fov
         else:
-            norm_image = np.zeros(self.mask.shape, np.float64)
-            norm_image[self.mask == 255] = norm_fov
+            norm_img = np.zeros(self.mask.shape, np.float64)
+            norm_img[self.mask == 255] = norm_fov
 
-            fg_feat = norm_image[self.selected_fg_idx]
-            bg_feat = norm_image[self.selected_bg_idx]
+            fg_feat = norm_img[self.selected_fg_idx]
+            bg_feat = norm_img[self.selected_bg_idx]
 
             return fg_feat, bg_feat
 
