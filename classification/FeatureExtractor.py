@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 
 from methods.multi_line_opr import cached_multi
+from methods.single_line_opr import cached_single
 from util.image_util import zero_one_norm
 
 
@@ -79,32 +80,32 @@ class FeatureExtractor:
 
             return features
 
-    def get_single_linestr_feat(self):
-        line_str = cached_multi(self.path, self.image, self.mask, self.size)
-        line_str_fov = line_str[self.mask == 255]
-        norm_fov_data = zero_one_norm(line_str_fov).ravel()
+    def get_single_feat(self):
+        single = cached_single(self.path, self.image, self.mask, self.size)
+        fov = single[self.mask == 255]
+        fov_norm = zero_one_norm(fov).ravel()
 
         if self.selected_fg_idx is None or self.selected_bg_idx is None:
-            return norm_fov_data
+            return fov_norm
         else:
             norm_image = np.zeros(self.mask.shape, np.float64)
-            norm_image[self.mask == 255] = norm_fov_data
+            norm_image[self.mask == 255] = fov_norm
 
             fg_feat = norm_image[self.selected_fg_idx]
             bg_feat = norm_image[self.selected_bg_idx]
 
             return fg_feat, bg_feat
 
-    def get_multi_linestr_feat(self):
-        line_str = cached_multi(self.path, self.image, self.mask, self.size)
-        line_str_fov = line_str[self.mask == 255]
-        norm_fov_data = zero_one_norm(line_str_fov).ravel()
+    def get_multi_feat(self):
+        multi = cached_multi(self.path, self.image, self.mask, self.size)
+        fov = multi[self.mask == 255]
+        fov_norm = zero_one_norm(fov).ravel()
 
         if self.selected_fg_idx is None or self.selected_bg_idx is None:
-            return norm_fov_data
+            return fov_norm
         else:
             norm_image = np.zeros(self.mask.shape, np.float64)
-            norm_image[self.mask == 255] = norm_fov_data
+            norm_image[self.mask == 255] = fov_norm
 
             fg_feat = norm_image[self.selected_fg_idx]
             bg_feat = norm_image[self.selected_bg_idx]

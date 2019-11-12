@@ -1,16 +1,14 @@
-from util.test_util import find_best_acc, get_accuracy, find_best_acc_optic, find_best_acc_proposed, get_accuracy_optic, \
-    get_accuracy_proposed, calc_auc, find_best_acc_each, find_best_acc_optic_each
-
 from dataset.DriveDatasetLoader import DriveDatasetLoader
 from methods.multi_line_opr import cached_multi_norm, cached_multi
 from methods.single_line_opr import cached_single, cached_single_norm
+from util.data_util import accuracy
 from util.print_color import *
 from util.timer import Timer
 
 
 def line_with_training():
-    train_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
-    test_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
+    train_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_train()
+    test_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_test()
 
     # op = cached_single_norm
     op = cached_multi_norm
@@ -25,7 +23,7 @@ def line_with_training():
     timer.stop()
 
     timer.start('Test')
-    test_acc = get_accuracy(op, test_data, thresh, size)
+    test_acc = accuracy(op, test_data, thresh, size)
     test_auc = calc_auc(test_data, op, size)
     timer.stop()
 
@@ -41,7 +39,7 @@ def line_with_training():
 
 
 def line_no_training():
-    data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
+    data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_train()
     # data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
 
     op = cached_single_norm
@@ -58,8 +56,8 @@ def line_no_training():
 
 
 def optic_with_training():
-    train_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
-    test_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
+    train_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_train()
+    test_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_test()
 
     # op = cached_single
     # thresh = 64
@@ -86,7 +84,7 @@ def optic_with_training():
 
 def optic_no_training():
     # data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
-    data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
+    data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_test()
 
     # op = cached_single
     op = cached_multi
@@ -103,8 +101,8 @@ def optic_no_training():
 
 
 def proposed_with_training():
-    train_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training()
-    test_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing()
+    train_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_train()
+    test_data = DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_test()
 
     op = cached_single
     # op = cached_multi

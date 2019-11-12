@@ -19,13 +19,13 @@ def proposed():
 
     timer.start('Feature extraction')
 
-    for path, img, mask, ground_truth in drive.load_training():
+    for path, img, mask, ground_truth in drive.load_train():
         img = 255 - img[:, :, 1]
         feat_extractor = FeatureExtractor(img, mask, path, size, ground_truth, N_FEATURES)
 
         pixel_feat_fg, pixel_feat_bg = feat_extractor.get_pixel_feat()
-        single_fg, single_bg = feat_extractor.get_single_linestr_feat()
-        multi_fg, multi_bg = feat_extractor.get_multi_linestr_feat()
+        single_fg, single_bg = feat_extractor.get_single_feat()
+        multi_fg, multi_bg = feat_extractor.get_multi_feat()
 
         fg_feat = np.column_stack((
             pixel_feat_fg,
@@ -43,6 +43,7 @@ def proposed():
         all_bg_feat = bg_feat if all_bg_feat is None else np.vstack((all_bg_feat, bg_feat))
 
     all_feats = np.vstack((all_fg_feat, all_bg_feat))
+
     timer.stop()
 
     target = np.append(np.repeat(1, N_FEATURES * 20), np.repeat(0, N_FEATURES * 20))
@@ -55,13 +56,13 @@ def proposed():
     timer.stop()
     timer.start('Predict')
 
-    for path, img, mask, ground_truth in drive.load_testing():
+    for path, img, mask, ground_truth in drive.load_test():
         img = 255 - img[:, :, 1]
         feat_extractor = FeatureExtractor(img, mask, path, size)
 
         pixel_feat = feat_extractor.get_pixel_feat()
-        single_feat = feat_extractor.get_single_linestr_feat()
-        multi_feat = feat_extractor.get_multi_linestr_feat()
+        single_feat = feat_extractor.get_single_feat()
+        multi_feat = feat_extractor.get_multi_feat()
 
         all_feats = np.column_stack((
             pixel_feat,

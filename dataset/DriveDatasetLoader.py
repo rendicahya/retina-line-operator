@@ -29,7 +29,7 @@ class DriveDatasetLoader:
 
         return self.load(img_path, mask_path, ground_path)
 
-    def load_training(self):
+    def load_train(self):
         data = []
 
         for data_id in range(1, 21):
@@ -44,7 +44,7 @@ class DriveDatasetLoader:
 
         return self.load(img_path, mask_path, ground_path)
 
-    def load_testing(self):
+    def load_test(self):
         data = []
 
         for data_id in range(1, 21):

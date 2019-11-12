@@ -103,7 +103,7 @@ def save_cache():
     time = Timer()
     size = 15
 
-    for path, img, mask, ground_truth in DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_training():
+    for path, img, mask, ground_truth in DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_train():
         img = 255 - img[:, :, 1]
 
         time.start(path)

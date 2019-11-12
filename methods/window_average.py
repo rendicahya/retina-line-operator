@@ -108,7 +108,7 @@ def save_cache():
     timer = Timer()
     size = 15
 
-    for path, image, mask, ground_truth in DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_testing():
+    for path, image, mask, ground_truth in DriveDatasetLoader('D:/Datasets/DRIVE', 10).load_test():
         image = 255 - image[:, :, 1]
 
         timer.start('%s/%d' % (path, size))
