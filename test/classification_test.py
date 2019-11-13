@@ -9,15 +9,11 @@ from util.print_color import *
 from util.timer import Timer
 
 
-def main():
+def test(n_points):
     drive = DriveDatasetLoader('D:/Datasets/DRIVE', 10)
-    n_points = 2000
     all_fg_feat = None
     all_bg_feat = None
     size = 15
-    timer = Timer()
-
-    timer.start('Feature extraction')
 
     for path, img, mask, ground in drive.load_train():
         img = 255 - img[:, :, 1]
@@ -44,16 +40,12 @@ def main():
 
     all_feats = np.vstack((all_fg_feat, all_bg_feat))
 
-    timer.stop()
-
     target = np.append(np.repeat(1, n_points // 2 * 20), np.repeat(0, n_points // 2 * 20))
     classifier = svm.SVC()
     # classifier = RandomForestClassifier(n_estimators=100, criterion='entropy', max_features='sqrt', random_state=0,
     #                                     n_jobs=-1)
 
-    timer.start('Training')
     classifier.fit(all_feats, target)
-    timer.stop()
 
     acc_list = []
     acc_fov_list = []
@@ -85,13 +77,6 @@ def main():
         acc_list.append(acc)
         acc_fov_list.append(acc_fov)
 
-        # timer.stop()
-        # green(f'Accuracy: {acc}')
-        # green(f'Accuracy FOV: {acc_fov}')
-
-        green(acc, ' ')
-        green(acc_fov)
-
         # cv2.imshow(f'Image {path}', img)
         # cv2.imshow(f'Segmentation {path}', result_img)
         # cv2.imshow(f'Ground truth {path}', ground)
@@ -100,8 +85,14 @@ def main():
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
 
-    yellow('Average accuracy: %f' % np.mean(acc_list))
-    yellow('Average FOV accuracy: %f' % np.mean(acc_fov_list))
+    return np.mean(acc_list), np.mean(acc_fov_list)
+
+
+def main():
+    for n_points in range(100, 2000, 100):
+        acc, acc_fov = test(n_points)
+
+        green(f'{n_points} {acc} {acc_fov} ')
 
 
 if __name__ == '__main__':
