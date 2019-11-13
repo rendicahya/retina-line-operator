@@ -4,6 +4,10 @@ import numpy as np
 from util.data_util import accuracy
 
 
+def clahe(img, clip_limit=2.0, tile_grid_size=(5, 5)):
+    return cv2.createCLAHE(clip_limit, tile_grid_size).apply(img)
+
+
 def gray_norm(img, mask=None):
     return cv2.normalize(img, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U, mask)
 

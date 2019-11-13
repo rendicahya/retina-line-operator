@@ -1,15 +1,14 @@
-import cv2
 import numpy as np
 from sklearn import svm
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 
 from classification.FeatureExtractor import FeatureExtractor
 from dataset.DriveDatasetLoader import DriveDatasetLoader
 from util.print_color import *
-from util.timer import Timer
 
 
-def test(n_points):
+def test(classifier, n_points):
     drive = DriveDatasetLoader('D:/Datasets/DRIVE', 10)
     all_fg_feat = None
     all_bg_feat = None
@@ -39,11 +38,7 @@ def test(n_points):
         all_bg_feat = bg_feat if all_bg_feat is None else np.vstack((all_bg_feat, bg_feat))
 
     all_feats = np.vstack((all_fg_feat, all_bg_feat))
-
     target = np.append(np.repeat(1, n_points // 2 * 20), np.repeat(0, n_points // 2 * 20))
-    classifier = svm.SVC()
-    # classifier = RandomForestClassifier(n_estimators=100, criterion='entropy', max_features='sqrt', random_state=0,
-    #                                     n_jobs=-1)
 
     classifier.fit(all_feats, target)
 
@@ -51,7 +46,6 @@ def test(n_points):
     acc_fov_list = []
 
     for path, img, mask, ground in drive.load_test():
-        # timer.start(f'Predict {path}')
         img = 255 - img[:, :, 1]
         feat_extractor = FeatureExtractor(img, mask, path, size)
 
@@ -89,10 +83,16 @@ def test(n_points):
 
 
 def main():
-    for n_points in range(100, 2000, 100):
-        acc, acc_fov = test(n_points)
+    # classifier = svm.SVC(kernel='rbf')
+    # classifier = RandomForestClassifier(n_jobs=-1)
+    classifier = svm.SVC(kernel='poly')
+    # classifier = svm.SVC(kernel='sigmoid')
+    # classifier = svm.SVC(kernel='linear')
 
-        green(f'{n_points} {acc} {acc_fov} ')
+    for n_points in range(1000, 2100, 100):
+        acc, acc_fov = test(classifier, n_points)
+
+        green(f'{n_points} {acc} {acc_fov}')
 
 
 if __name__ == '__main__':
