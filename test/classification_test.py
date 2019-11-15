@@ -85,11 +85,11 @@ def test(classifier, n_points):
 def main():
     # classifier = svm.SVC(kernel='rbf')
     # classifier = RandomForestClassifier(n_jobs=-1)
-    classifier = svm.SVC(kernel='poly')
+    classifier = svm.SVC(kernel='poly', degree=5)
     # classifier = svm.SVC(kernel='sigmoid')
     # classifier = svm.SVC(kernel='linear')
 
-    for n_points in range(1000, 2100, 100):
+    for n_points in range(100, 2100, 100):
         acc, acc_fov = test(classifier, n_points)
 
         green(f'{n_points} {acc} {acc_fov}')
